@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="ebase.hkgrox.com.ebase">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:name=".util.MApplication"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
+
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.FirstPage"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Giftstatus"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Couponstatus"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Report_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Reportbydate"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".DownloadCoupon"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.SelectVender"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Registervender"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.AvailedGiftUser"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.DailyVisitReport"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.trackvisit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Newaddcoupon"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.Reports"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+        <activity
+            android:name=".ui.HomePageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+
+        <activity
+            android:name=".ui.Forget"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo">
+
+        </activity>
+
+        <service
+            android:name=".ui.FirebaseInstanceIdService"
+            android:enabled="true"
+            android:exported="true"/>
+
+        <activity android:name=".ui.MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ChangePasswordActivityVender"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ChangePasswordActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.UserHome"
+            android:theme="@style/AppThemeNo"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ExecutivesSale"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ManagersSale"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.UserPointsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.AddCouponActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.ManagerHome"
+            android:theme="@style/AppThemeNo"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ManagersAddSale"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.ExecutiveHome"
+            android:theme="@style/AppThemeNo"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ExecutivesSaleAdd"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.AboutUs"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ContactUs"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.Products"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.Enquiry"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.AdminHome"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.CouponSummary"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CouponAdminUserDetail"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.StaffForm"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.PointsDetails"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.Indivisual"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ExecutiveCompiled"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ManagerCompiled"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.StaffEdit"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.GIFT"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.GiftDetails"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.CouponGifts"
+            android:screenOrientation="portrait"/>
+
+    </application>
+
+</manifest>

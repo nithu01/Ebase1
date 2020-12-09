@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1033266566717",
+    "project_id": "euroils",
+    "storage_bucket": "euroils.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033266566717:android:fd62b86c4911ced6b4fc54",
+        "android_client_info": {
+          "package_name": "ebase.hkgrox.com.ebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033266566717-13dhstrlsjc7pv6abcsuivrviq6745fo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmS9mln62U90MKFGV3yyROrzoIzz_sUlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033266566717-13dhstrlsjc7pv6abcsuivrviq6745fo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

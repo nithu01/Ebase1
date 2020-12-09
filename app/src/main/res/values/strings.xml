@@ -1,0 +1,134 @@
+<resources>
+    <string name="app_name">Euroils</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="about_us"><![CDATA[EUROiLS has introduced its premium range of lubricants & greases in Indian after market. Known for its cutting-edge technology and high-quality products, EUROILS backed by Rites & Jones\' pioneering R&D, extensive blending and distribution network, sustained brand enhancement and new generation packaging is a one-stop shop for complete lubrication solutions in the automotive & industrial segments. Euroils range includesover 100 lubricants and 30 formulations encompassaing literally every lubricant requirements..]]></string>
+    <string name="contact_us">F-163, RIICO Industrial Area, Chopanki,Bhiwadi, Dist. Alwar, Rajasthan,</string>
+    <string name="note">* Maximum 40000 Records can be downloaded</string>
+
+    <string-array name="zero_point">
+        <item>Select gift</item>
+    </string-array>
+
+    <string-array name="first_point">
+        <item>T-SHIRT</item>
+
+    </string-array>
+    <string-array name="second_point">
+        <item>TRAVEL BAG</item>
+        <item>BACK BAG</item>
+        <item>WRIST WATCH</item>
+        <item>HELMET</item>
+    </string-array>
+
+    <string-array name="third_point">
+        <item>MILTON 5L WATER CAMPER</item>
+        <item>SANDDISK 16GB USB</item>
+    </string-array>
+
+    <string-array name="fourth_point">
+        <item>BRANDED ELECTRICAL IRON</item>
+        <item>MINI TROLLY BAG</item>
+    </string-array>
+
+    <string-array name="fifth_point">
+        <item>JBL HEADPHONE</item>
+        <item>HAWKINS 3L PRESSURE COOKER</item>
+    </string-array>
+
+    <string-array name="sixth_point">
+        <item>TROLLY BAG</item>
+        <item>HAWKINS 5L PRESSURE COOKER</item>
+        <item>USHA CELLING FAN</item>
+    </string-array>
+
+    <string-array name="seventh_point">
+        <item>MIXER GRINDER</item>
+        <item>USHA PEDESTAL FAN</item>
+        <item>SAMSUNG SMART WATCH</item>
+    </string-array>
+
+    <string-array name="eight_point">
+        <item>INTEX AQUA SMARTPHONE</item>
+
+    </string-array>
+
+    <string-array name="ninth_point">
+        <item>MICROMAX BOLT SMARTPHONE</item>
+
+    </string-array>
+
+    <string-array name="tenth_point">
+        <item>HERO CYCLE</item>
+
+    </string-array>
+
+    <string-array name="eleventh_point">
+        <item>ASUS PHONE GO 4.5</item>
+        <item>SAMSUNG GALAXY J120</item>
+    </string-array>
+
+    <string-array name="twelth_point">
+        <item>BLUESTAR HOT AND COLD WATER DISPENSER</item>
+        <item>HAIER SEMI-AUTOMATIC WASHING MACHINE</item>
+    </string-array>
+
+    <string-array name="thirteenth_point">
+        <item>ASUS ZENPHONE2,3GB</item>
+        <item>SAMSUNG ON 7 PRO</item>
+    </string-array>
+
+    <string-array name="fourtheenth_point">
+        <item>LG REFRIGERATOR 190L</item>
+        <item>LG SEMI-AUTOMATIC WASHING MACHINE</item>
+    </string-array>
+
+    <string-array name="fiftheenth_point">
+        <item>GOLD COIN 5G</item>
+        <item>LG FULLY AUTOMATIC WASHING MACHINE</item>
+    </string-array>
+
+    <string-array name="sixteenth_point">
+        <item>IPHONE 5S</item>
+        <item>32 INCH LED</item>
+    </string-array>
+
+    <string-array name="eighteenth_point">
+        <item>WINDOW AC 1.5TONNE</item>
+
+    </string-array>
+
+    <string-array name="nintheenth_point">
+        <item>HP LAPTOP</item>
+        <item>DELL LAPTOP</item>
+        <item>IPHONE 6</item>
+        <item>LG 1.5 TONNE SPLIT AC</item>
+    </string-array>
+
+    <string-array name="twenty_point">
+        <item>40 INCH LED</item>
+        <item>THAILAND TOUR FOR 1 PERSON</item>
+
+    </string-array>
+
+    <string-array name="twentyone_point">
+        <item>HERO SPLENDER</item>
+        <item>55 INCH LED</item>
+
+    </string-array>
+
+    <string-array name="twentytwo_point">
+        <item>IPHONE 7</item>
+        <item>THAILAND TOUR FOR 2 PERSON</item>
+
+    </string-array>
+    <string name="title_activity_report_name">Report_name</string>
+    <string name="title_activity_trackvisit">trackvisit</string>
+    <string name="title_activity_vendordetail">Vendordetail</string>
+    <string name="hintSearchMess">Refine your search</string>
+    <string name="title_activity_couponstatus">Couponstatus</string>
+    <string name="title_activity_giftstatus">Giftstatus</string>
+    <string name="title_activity_add_coupon">AddCoupon</string>
+    <string name="title_activity_newaddcoupon">Newaddcoupon</string>
+
+</resources>
