@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Ebase1.iml" filepath="$PROJECT_DIR$/Ebase1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Ebase1.iml" filepath="$PROJECT_DIR$/.idea/modules/Ebase1.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/activation/Ebase1.activation.iml" filepath="$PROJECT_DIR$/.idea/modules/activation/Ebase1.activation.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/additionnal/Ebase1.additionnal.iml" filepath="$PROJECT_DIR$/.idea/modules/additionnal/Ebase1.additionnal.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Ebase1.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Ebase1.app.iml" />

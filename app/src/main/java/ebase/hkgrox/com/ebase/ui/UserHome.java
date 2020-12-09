@@ -256,6 +256,7 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
         add = (AppCompatButton) findViewById(R.id.btnLogin);
         btn_view = (AppCompatButton) findViewById(R.id.btn_view);
         btn_change_Password = (AppCompatButton) findViewById(R.id.btn_change_Password);
+        btn_create.setOnClickListener(this);
         btnAddCoupon.setOnClickListener(this);
         add.setOnClickListener(this);
         btn_view.setOnClickListener(this);
@@ -288,6 +289,10 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
+        if (v == btn_create){
+            Intent intent = new Intent(this,Registration.class);
+            startActivity(intent);
+        }
         if (v == btn_gift) {
 
             Intent intent = new Intent(this,GIFT.class);

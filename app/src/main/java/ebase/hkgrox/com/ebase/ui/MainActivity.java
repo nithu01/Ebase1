@@ -1,9 +1,11 @@
 package ebase.hkgrox.com.ebase.ui;
 
 import android.content.Intent;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText etPincode;
     private EditText etAddress;
     Config config;
-    Spinner user_type;
+    Spinner user_type,dis_type;
     String login_url2 =config.ip_url;
     String name,address,mobile,state,city,pincode,password,email;
     List<USER> arraylist=new ArrayList<>();
@@ -60,6 +62,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         user_type=findViewById(R.id.user_type);
+        dis_type=findViewById(R.id.dis_type);
+        user_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String statename = parent.getItemAtPosition(position).toString();
+                if (statename.equals("Distributor")){
+                    dis_type.setVisibility(View.VISIBLE);
+                    // put distributor Api here
+                }else{
+                    dis_type.setVisibility(View.GONE);
+                }
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
        /* try {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         } catch (Exception e) {
