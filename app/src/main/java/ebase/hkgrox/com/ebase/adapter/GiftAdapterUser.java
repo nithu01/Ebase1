@@ -20,10 +20,10 @@ import ebase.hkgrox.com.ebase.ui.AvailedGiftUser;
  */
 
 public class GiftAdapterUser extends RecyclerView.Adapter<GiftAdapterUser.ViewHolder>{
+
     private List<CouponRedeem> mValues;
     private final Context context;
     Config config;
-
     String login_url2 =config.ip_url;
     String srn;
 
@@ -66,6 +66,5 @@ public class GiftAdapterUser extends RecyclerView.Adapter<GiftAdapterUser.ViewHo
             tvGift=(TextView)mView.findViewById(R.id.tv_gift);
         }
     }
-
 
 }

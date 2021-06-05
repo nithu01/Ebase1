@@ -66,6 +66,7 @@ public class SplashActivity extends AppCompatActivity {
         //PermissionsHelper.show(this);
 
         Intent intent = new Intent(SplashActivity.this, FirstPage.class);
+        intent.putExtra("DATA", "");
         startActivity(intent);
     }
 
@@ -100,6 +101,7 @@ public class SplashActivity extends AppCompatActivity {
                  }*/
 
             Intent intent = new Intent(SplashActivity.this, FirstPage.class);
+            intent.putExtra("DATA", "");
             startActivity(intent);
 
 
@@ -236,43 +238,6 @@ public class SplashActivity extends AppCompatActivity {
             }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public static String getAppVersion(Context context) {
         String appVersion = "";

@@ -164,7 +164,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:hint="Password"
-                    android:inputType="textPassword"
+
                     android:layout_marginBottom="10dp"
                     android:maxLines="1"
                     android:singleLine="true"
@@ -179,7 +179,7 @@
                     android:layout_marginRight="20dp"
 
                     android:hint="Confirm Password"
-                    android:inputType="textPassword"
+
 
                     android:maxLines="1"
                     android:singleLine="true"

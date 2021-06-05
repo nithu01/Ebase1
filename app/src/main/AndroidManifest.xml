@@ -3,13 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ebase.hkgrox.com.ebase">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        android:required="true" />
 
     <application
         android:name=".util.MApplication"
@@ -20,7 +23,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.Registration"></activity>
+        <activity android:name=".ui.Before_Premium_Retailer"></activity>
+        <activity android:name=".ui.Pr_points_tally" />
+        <activity android:name=".ui.Coupondetails" />
+        <activity android:name=".ui.OldPremiumReport" />
+        <activity android:name=".ui.CheckAllMonthPremiumRetailer" />
+        <activity android:name=".ui.upgrade_user" />
+        <activity android:name=".ui.Upgrade_user" />
+        <activity android:name=".ui.PremiumRetailerReport" />
+        <activity android:name=".RegisterationActivity" />
+        <activity android:name=".ui.MessageActivity" />
+        <activity android:name=".item_premium_retailer" />
+        <activity android:name=".Premium_Retailer" />
+        <activity android:name=".ui.SendNotification" />
+        <activity android:name=".ui.UserAddress" />
+        <activity android:name=".ui.Registration" />
         <activity
             android:name=".ui.SplashActivity"
             android:screenOrientation="portrait"
@@ -34,63 +51,71 @@
         <activity
             android:name=".ui.FirstPage"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
+        <activity
+            android:name=".ui.Vendordetail"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Giftstatus"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
+        <activity
+            android:name=".GiftAdminUserDetail"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Couponstatus"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Report_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Reportbydate"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".DownloadCoupon"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.SelectVender"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Registervender"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.AvailedGiftUser"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.DailyVisitReport"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.trackvisit"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Newaddcoupon"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Reports"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.HomePageActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
         <activity
             android:name=".ui.Forget"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNo"></activity>
+            android:theme="@style/AppThemeNo" />
 
         <service
             android:name=".ui.FirebaseInstanceIdService"

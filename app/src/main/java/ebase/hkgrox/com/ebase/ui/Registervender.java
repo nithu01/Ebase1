@@ -75,10 +75,11 @@ public class Registervender extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MUtil.showProgressDialog(Registervender.this);
                 Retrofit retrofit=new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build();
                 Apiorder apiorder=retrofit.create(Apiorder.class);
                 Call<List<Vender>> call=apiorder.register(user.getNAME(),user.getMOBILE(),state.getText().toString(),party.getText().toString(),cperson.getText().toString(),phone2.getText().toString(),phone.getText().toString(),email.getText().toString(),retailer.getSelectedItem().toString(),segment.getText().toString(),pincode.getText().toString(),city.getText().toString(),area.getText().toString(),address.getText().toString(),potential.getText().toString(),MUtil.getTodayDate());
-                Toast.makeText(Registervender.this,cperson.getText().toString()+phone2.getText().toString(), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(Registervender.this,cperson.getText().toString()+phone2.getText().toString(), Toast.LENGTH_SHORT).show();
                 call.enqueue(new Callback<List<Vender>>() {
                     @Override
                     public void onResponse(Call<List<Vender>> call, Response<List<Vender>> response) {
@@ -132,7 +133,7 @@ public class Registervender extends AppCompatActivity {
 
 
                         }
-
+                        MUtil.dismissProgressDialog();
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(Registervender.this);
                         builder1.setMessage("Record inserted");
                         builder1.setCancelable(true);
@@ -154,10 +155,12 @@ public class Registervender extends AppCompatActivity {
 
 
 
+
                     }
 
                     @Override
                     public void onFailure(Call<List<Vender>> call, Throwable t) {
+                        MUtil.dismissProgressDialog();
                         Toast.makeText(Registervender.this, "Error", Toast.LENGTH_SHORT).show();
 
                     }

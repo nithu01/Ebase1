@@ -37,6 +37,18 @@ public class USER implements Serializable ,Cloneable{
     @Expose
     private String ENABLE;
 
+    @SerializedName("Upgrade")
+    @Expose
+    private String upgrade;
+
+    public String getUpgrade() {
+        return upgrade;
+    }
+
+    public void setUpgrade(String upgrade) {
+        this.upgrade = upgrade;
+    }
+
     @SerializedName("MOBILE")
     @Expose
     private String MOBILE;
@@ -223,13 +235,9 @@ public class USER implements Serializable ,Cloneable{
         this.POINTS = POINTS;
     }
 
-    @SerializedName("POINTS")
+    @SerializedName("POINT")
     @Expose
     private String POINTS;
-
-
-
-
 
     @SerializedName("CURRENT_SSTG")
     @Expose

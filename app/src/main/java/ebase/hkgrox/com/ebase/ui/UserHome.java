@@ -3,7 +3,6 @@ package ebase.hkgrox.com.ebase.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -50,24 +48,37 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
     private AppCompatButton btn_change_Password;
     private AppCompatButton btn_gift,btn_availed_gift;
     private AppCompatButton btn_create;
+    private AppCompatButton btn_notification;
+    AppCompatButton btn_old_report;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_home);
         findViews();
+
         user = (USER) getIntent().getExtras().getSerializable("DATA");
-        usertype=getIntent().getStringExtra("Usertype");
+
+//        usertype=getIntent().getStringExtra("Usertype");
+        usertype=user.getDEGINATION();
         setData();
         if(usertype.equals("distributor"))
         {
             btn_create.setVisibility(View.VISIBLE);
-            btn_view.setVisibility(View.GONE);
-            btn_change_Password.setVisibility(View.GONE);
-            btn_gift.setVisibility(View.GONE);
-            btn_availed_gift.setVisibility(View.GONE);
-            btnAddCoupon.setVisibility(View.GONE);
-            add.setVisibility(View.GONE);
+//            btn_view.setVisibility(View.GONE);
+//            btn_change_Password.setVisibility(View.GONE);
+//            btn_gift.setVisibility(View.GONE);
+//            btn_availed_gift.setVisibility(View.GONE);
+//            btnAddCoupon.setVisibility(View.GONE);
+//            add.setVisibility(View.GONE);
+        }else{
+            btn_create.setVisibility(View.GONE);
+
+        }
+        if(usertype.equals("Premium Retailer"))
+        {
+            btn_old_report.setVisibility(View.VISIBLE);
+
         }
         setNavigationDrawer();
         FirebaseInstanceId.getInstance().getInstanceId()
@@ -77,8 +88,6 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
                         if (task.isSuccessful()){
                             String token = task.getResult().getToken();
                             storetoken(token);
-                        } else {
-
                         }
                     }
                 });
@@ -92,6 +101,7 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
                 finish();
             }
         });
+
     }
 
     private void setNavigationDrawer() {
@@ -209,12 +219,13 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
         couponGifts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(UserHome.this, CouponGifts.class);
+                Intent intent = new Intent(UserHome.this, FirstPage.class);
                 // intent.putExtra(AppUtil.DATA,user);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
+
 
     }
     @Override
@@ -222,8 +233,14 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            Intent intent = new Intent(UserHome.this,HomePageActivity.class);
+            startActivity(intent);
+            finish();
         } else {
-            super.onBackPressed();
+//            super.onBackPressed();
+            Intent intent = new Intent(UserHome.this,HomePageActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -248,7 +265,12 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
      * Auto-created on 2017-02-01 20:34:16 by Android Layout Finder
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
+
     private void findViews() {
+        btn_old_report=findViewById(R.id.old_report);
+        btn_old_report.setOnClickListener(this);
+        btn_notification=findViewById(R.id.btn_notification);
+        btn_notification.setOnClickListener(this);
         btn_create=findViewById(R.id.btn_create);
         tvTotalPoints = (TextView) findViewById(R.id.tv_total_points);
         btnAddCoupon = (AppCompatButton) findViewById(R.id.btn_add_coupon);
@@ -269,39 +291,52 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
 
     public void storetoken(String token)
     {
-        Retrofit retrofit=new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
-        ApiService apiinterface=retrofit.create(ApiService.class);
-        Call<List<Registerdevice>> call=apiinterface.storetoken(token,user.getMOBILE());
-        call.enqueue(new Callback<List<Registerdevice>>() {
-            @Override
-            public void onResponse(Call<List<Registerdevice>> call, Response<List<Registerdevice>> response) {
+        try {
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
+            ApiService apiinterface = retrofit.create(ApiService.class);
+            Call<List<Registerdevice>> call = apiinterface.storetoken(token, user.getMOBILE());
+            call.enqueue(new Callback<List<Registerdevice>>() {
+                @Override
+                public void onResponse(Call<List<Registerdevice>> call, Response<List<Registerdevice>> response) {
 
-                Toast.makeText(UserHome.this, "Welcome to Shree Shiv Sewak", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(UserHome.this, "Welcome to Shree Shiv Sewak", Toast.LENGTH_SHORT).show();
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<List<Registerdevice>> call, Throwable t) {
-                Toast.makeText(UserHome.this,"Error",Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<List<Registerdevice>> call, Throwable t) {
+                    Toast.makeText(UserHome.this, "Error", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e){
+
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (v == btn_create){
             Intent intent = new Intent(this,Registration.class);
+            intent.putExtra("DATA", user);
             startActivity(intent);
         }
+
         if (v == btn_gift) {
 
             Intent intent = new Intent(this,GIFT.class);
             intent.putExtra("DATA", user);
             startActivity(intent);
         }
+
         else if(v==btn_availed_gift){
             Intent intent = new Intent(this,AvailedGiftUser.class);
             intent.putExtra("DATA", user);
+            startActivity(intent);
+        }
+
+        else if(v==btn_notification){
+            Intent intent = new Intent(this,MessageActivity.class);
+//            intent.putExtra("DATA", user);
             startActivity(intent);
         }
         else if (v == btn_change_Password) {
@@ -327,14 +362,18 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
         } else if (v == btn_view) {
            /* // Handle clicks for btnAddCoupon
             add.setVisibility(View.VISIBLE);
-            etCoupon.setVisibility(View.VISIBLE);
+            etCoupon.setVisibility(View.VISIBLE);;
             etCoupon.setText("");
             btnAddCoupon.setVisibility(View.GONE);*/
             Intent intent = new Intent(this,UserPointsActivity.class);
             intent.putExtra("DATA", user);
             startActivity(intent);
         }
-
+        else if(v==btn_old_report){
+            Intent intent = new Intent(this,OldPremiumReport.class);
+            intent.putExtra("DATA", user);
+            startActivity(intent);
+        }
         /*else if (v == btnAddCoupon) {
             // Handle clicks for add
 
@@ -376,6 +415,7 @@ public class UserHome extends AppCompatActivity implements View.OnClickListener 
 
         }*/
     }
+
 
     private void addPoints(final COUPON coupon) {
 

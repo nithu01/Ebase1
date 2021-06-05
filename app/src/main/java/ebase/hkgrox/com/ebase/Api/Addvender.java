@@ -14,9 +14,14 @@ import retrofit2.http.Query;
  */
 
 public interface Addvender {
+
+    @FormUrlEncoded
+    @POST("/ebase/addvendoru.php")
+    Call<List<USER>> inseru(@Field("name") String name, @Field("city") String city, @Field("phn") String phn, @Field("address") String address, @Field("email") String email, @Field("password") String password, @Field("pincode") String pincode, @Field("state") String state);
+
     @FormUrlEncoded
     @POST("/ebase/addvender.php")
-    Call<List<USER>> inser(@Field("name") String name, @Field("city") String city, @Field("phn") String phn, @Field("address") String address, @Field("email") String email, @Field("password") String password, @Field("pincode") String pincode, @Field("state") String state, @Field("designation") String usertype);
+    Call<List<USER>> inser(@Field("date") String date,@Field("name") String name, @Field("city") String city, @Field("phn") String phn, @Field("address") String address, @Field("email") String email, @Field("password") String password, @Field("pincode") String pincode, @Field("state") String state, @Field("designation") String usertype, @Field("distributor") String distributor);
 
     @FormUrlEncoded
     @POST("/ebase/staffform.php")
@@ -25,9 +30,13 @@ public interface Addvender {
     @GET("/ebase/staffedit.php")
     Call<List<USER>> retrieve();
 
+    @GET("/ebase/getdistributor.php")
+    Call<List<USER>> getdistributor();
+
     @FormUrlEncoded
     @POST("/ebase/staffupdate.php")
     Call<List<USER>> staffupdate(@Field("name") String name,@Field("mobile")String mobile,@Field("email")String email,@Field("location")String location,@Field("password")String password,@Field("position")String position,@Field("ste")String ste,@Field("stm")String stm,@Field("scm")String scm,@Field("enable")String enable);
+
     @FormUrlEncoded
     @POST("/ebase/Passwordchange.php")
     Call<List<USER>> updatepass(@Field("oldp") String oldp, @Field("newp") String newp);
@@ -53,10 +62,10 @@ public interface Addvender {
 
     @GET("/ebase/managercompiled.php")
     Call<List<USER>> managercompiled(@Query("month")String month,@Query("year")String year);
+
     @FormUrlEncoded
     @POST("/ebase/updateman.php")
     Call<List<USER>> updateman(@Field("mobile")String mobile,@Field("cmct")String cmct,@Field("cmst")String cmst);
-
 
     @FormUrlEncoded
     @POST("/ebase/updateexe.php")

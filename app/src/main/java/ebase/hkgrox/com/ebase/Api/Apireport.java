@@ -35,8 +35,7 @@ public interface Apireport {
     @GET("/ebase/getdetails.php")
     Call<List<Vender>> getdetails(@Query("party")String party);
 
-    @FormUrlEncoded
-    @POST("/ebase/trackvisit.php")
-    Call<List<Vender>> gettrackvisit(@Field("sdate") String sdate,@Field("edate") String edate,@Field("executive_phone")String executive_name);
+    @GET("/ebase/trackvisit.php")
+    Call<List<Vender>> gettrackvisit(@Query("sdate") String sdate,@Query("edate") String edate,@Query("executive_phone")String executive_name);
 
 }

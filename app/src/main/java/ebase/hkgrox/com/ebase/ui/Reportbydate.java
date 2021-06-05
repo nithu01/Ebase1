@@ -1,18 +1,24 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -37,6 +43,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class Reportbydate extends AppCompatActivity {
 
     Button startdate,enddate;
@@ -48,6 +57,7 @@ public class Reportbydate extends AppCompatActivity {
     SearchView searchView;
     RecyclerView recyclerView;
     reportbydate adapter;
+    int mYear, mMonth, mDay, mHour, mMinute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +77,15 @@ public class Reportbydate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                // createFileVendor(newvender);
-                createnewveder();
+                if (!checkPermission()) {
+                    requestPermission();
+                    //  createFile();
+                    //  Toast.makeText(DownloadCoupon.this,"",Toast.LENGTH_SHORT).show();
+                } else {
+
+                    createnewveder();
+                }
+
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -176,7 +194,7 @@ public class Reportbydate extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<Vender>> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"No data",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -191,153 +209,242 @@ public class Reportbydate extends AppCompatActivity {
         startdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDatePicker();
+                //openDatePicker();
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(Reportbydate.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                                startDate = new StringBuilder().append(year).
+                                        append("-").append(month+1).append("-").append(day).toString().trim();
+
+                                startdate.setText(startDate);
+                            }
+                        },mYear,mMonth,mDay);
+
+                datePickerDialog.show();
+
             }
         });
+
         enddate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                endDatePicker();
+               // endDatePicker();
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(Reportbydate.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                                endDate = new StringBuilder().append(year).
+                    append("-").append(month+1).append("-").append(day).toString().trim();
+                           enddate.setText(endDate);
+                            }
+                        },mYear,mMonth,mDay);
+
+                datePickerDialog.show();
+
             }
         });
-    }
-    private void openDatePicker() {
-        Calendar cal = Calendar.getInstance(TimeZone.getDefault()); // Get current date
-       /* DatePickerDialog datePicker = new DatePickerDialog(getActivity(),
-                R.style.AppTheme, pickerListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH));*/
-
-
-        DatePickerDialog datePicker = DatePickerDialog.newInstance(
-                pickerListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-        );
-
-
-     /*   int year = cal.get(Calendar.YEAR);
-        cal.set((year ), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-        datePicker.setMaxDate(cal);
-
-        Calendar calold = Calendar.getInstance(TimeZone.getDefault());
-        int month = cal.get(Calendar.MONTH);
-        //if(month>0){
-        calold.set((year ), (cal.get(Calendar.MONTH)), 1);
-        // }else{
-        // calold.set((year+1 ), (11), cal.get(Calendar.DAY_OF_MONTH));
-        // }
-        datePicker.setMinDate(calold);
-
-        datePicker.setCancelable(true);
-
-        datePicker.show(this.getFragmentManager(), "Data Picker");*/
-
-        int year = cal.get(Calendar.YEAR);
-        cal.set((year ), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-        datePicker.setMaxDate(cal);
-
-        Calendar calold = Calendar.getInstance(TimeZone.getDefault());
-        int month = cal.get(Calendar.MONTH);
-        if(month>0){
-        calold.set((year ), (cal.get(Calendar.MONTH)-4), 1);
-         }else{
-         calold.set((year-1 ), (11), cal.get(Calendar.DAY_OF_MONTH));
-         }
-        datePicker.setMinDate(calold);
-
-        datePicker.setCancelable(true);
-
-        datePicker.show(this.getFragmentManager(), "Data Picker");
-    }
-
-    private void endDatePicker() {
-        Calendar cal = Calendar.getInstance(TimeZone.getDefault()); // Get current date
-       /* DatePickerDialog datePicker = new DatePickerDialog(getActivity(),
-                R.style.AppTheme, pickerListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH));*/
-
-
-        DatePickerDialog datePicker = DatePickerDialog.newInstance(
-                startpickerListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-        );
-
-
-        int year = cal.get(Calendar.YEAR);
-        cal.set((year ), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-        datePicker.setMaxDate(cal);
-
-        Calendar calold = Calendar.getInstance(TimeZone.getDefault());
-        int month = cal.get(Calendar.MONTH);
-        if(month>0){
-        calold.set((year ), (cal.get(Calendar.MONTH)-12), 1);
-         }else{
-         calold.set((year-1 ), (11), cal.get(Calendar.DAY_OF_MONTH));
-        }
-        datePicker.setMinDate(calold);
-
-        datePicker.setCancelable(true);
-
-        datePicker.show(this.getFragmentManager(), "Data Picker");
-
 
     }
-    int year ;
-    int month ;
-    int day ;
 
-    int eyear;
-    int emonth;
-    int eday;
-    private DatePickerDialog.OnDateSetListener startpickerListener= new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            eyear=year;
-            emonth=monthOfYear;
-            eday=dayOfMonth;
+//    private void openDatePicker() {
+//        Calendar cal = Calendar.getInstance(TimeZone.getDefault()); // Get current date
+//       /* DatePickerDialog datePicker = new DatePickerDialog(getActivity(),
+//                R.style.AppTheme, pickerListener,
+//                cal.get(Calendar.YEAR),
+//                cal.get(Calendar.MONTH),
+//                cal.get(Calendar.DAY_OF_MONTH));*/
+//
+//
+//        DatePickerDialog datePicker = DatePickerDialog.newInstance(
+//                pickerListener,
+//                cal.get(Calendar.YEAR),
+//                cal.get(Calendar.MONTH),
+//                cal.get(Calendar.DAY_OF_MONTH)
+//        );
+//
+//
+//     /*   int year = cal.get(Calendar.YEAR);
+//        cal.set((year ), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+//        datePicker.setMaxDate(cal);
+//
+//        Calendar calold = Calendar.getInstance(TimeZone.getDefault());
+//        int month = cal.get(Calendar.MONTH);
+//        //if(month>0){
+//        calold.set((year ), (cal.get(Calendar.MONTH)), 1);
+//        // }else{
+//        // calold.set((year+1 ), (11), cal.get(Calendar.DAY_OF_MONTH));
+//        // }
+//        datePicker.setMinDate(calold);
+//
+//        datePicker.setCancelable(true);
+//
+//        datePicker.show(this.getFragmentManager(), "Data Picker");*/
+//
+//        int year = cal.get(Calendar.YEAR);
+//        cal.set((year ), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+//        datePicker.setMaxDate(cal);
+//
+//        Calendar calold = Calendar.getInstance(TimeZone.getDefault());
+//        int month = cal.get(Calendar.MONTH);
+//        if(month>0){
+//        calold.set((year ), (cal.get(Calendar.MONTH)-4), 1);
+//         }else{
+//         calold.set((year-1 ), (11), cal.get(Calendar.DAY_OF_MONTH));
+//         }
+//        datePicker.setMinDate(calold);
+//
+//        datePicker.setCancelable(true);
+//
+//        datePicker.show(this.getFragmentManager(), "Data Picker");
+//    }
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
 
-           endDate = new StringBuilder().append(eyear)
-                    .append("-").append(emonth+1).append("-").append(eday).toString().trim();
-            enddate.setText(endDate);
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1);
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(Reportbydate.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean cameraAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (locationAccepted && cameraAccepted) {
+                        createnewveder();
+                    }
+                    else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
+                                showMessageOKCancel("You need to allow access to both the permissions",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE},
+                                                            1);
+                                                }
+                                            }
+                                        });
+                                return;
+                            }
+                        }
+
+                    }
+                }
+
+
+                break;
         }
-    };
+    }
 
-    private DatePickerDialog.OnDateSetListener pickerListener = new DatePickerDialog.OnDateSetListener() {
-
-        @Override
-        public void onDateSet(DatePickerDialog view, int selectedYear,
-                              int selectedMonth, int selectedDay) {
-
-       /* }
-
-        // when dialog box is closed, below method will be called.
-        @Override
-        public void onDateSet(DatePicker view, int selectedYear,
-                              int selectedMonth, int selectedDay) {
-
-*/
-            year = selectedYear;
-            month = selectedMonth;
-            day = selectedDay;
-
-
-
-           // monthString = new DateFormatSymbols().getMonths()[month].substring(0,3);
-            startDate = new StringBuilder().append(year)
-                    .append("-").append(month+1).append("-").append(day).toString().trim();
-
-
-            startdate.setText(startDate);
-
-        }
-    };
+//    private void endDatePicker() {
+//        Calendar cal = Calendar.getInstance(TimeZone.getDefault()); // Get current date
+//       /* DatePickerDialog datePicker = new DatePickerDialog(getActivity(),
+//                R.style.AppTheme, pickerListener,
+//                cal.get(Calendar.YEAR),
+//                cal.get(Calendar.MONTH),
+//                cal.get(Calendar.DAY_OF_MONTH));*/
+//
+//
+//        DatePickerDialog datePicker = DatePickerDialog.newInstance(
+//                startpickerListener,
+//                cal.get(Calendar.YEAR),
+//                cal.get(Calendar.MONTH),
+//                cal.get(Calendar.DAY_OF_MONTH)
+//        );
+//
+//
+//        int year = cal.get(Calendar.YEAR);
+//        cal.set((year ), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+//        datePicker.setMaxDate(cal);
+//
+//        Calendar calold = Calendar.getInstance(TimeZone.getDefault());
+//        int month = cal.get(Calendar.MONTH);
+//        if(month>0){
+//        calold.set((year ), (cal.get(Calendar.MONTH)-12), 1);
+//         }else{
+//         calold.set((year-1 ), (11), cal.get(Calendar.DAY_OF_MONTH));
+//        }
+//        datePicker.setMinDate(calold);
+//
+//        datePicker.setCancelable(true);
+//
+//        datePicker.show(this.getFragmentManager(), "Data Picker");
+//
+//
+//    }
+//    int year ;
+//    int month ;
+//    int day ;
+//
+//    int eyear;
+//    int emonth;
+//    int eday;
+//    private DatePickerDialog.OnDateSetListener startpickerListener= new DatePickerDialog.OnDateSetListener() {
+//        @Override
+//        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+//            eyear=year;
+//            emonth=monthOfYear;
+//            eday=dayOfMonth;
+//
+//           endDate = new StringBuilder().append(eyear)
+//                    .append("-").append(emonth+1).append("-").append(eday).toString().trim();
+//            enddate.setText(endDate);
+//        }
+//    };
+//
+//    private DatePickerDialog.OnDateSetListener pickerListener = new DatePickerDialog.OnDateSetListener() {
+//
+//        @Override
+//        public void onDateSet(DatePickerDialog view, int selectedYear,
+//                              int selectedMonth, int selectedDay) {
+//
+//       /* }
+//
+//        // when dialog box is closed, below method will be called.
+//        @Override
+//        public void onDateSet(DatePicker view, int selectedYear,
+//                              int selectedMonth, int selectedDay) {
+//
+//*/
+//            year = selectedYear;
+//            month = selectedMonth;
+//            day = selectedDay;
+//
+//
+//
+//           // monthString = new DateFormatSymbols().getMonths()[month].substring(0,3);
+//            startDate = new StringBuilder().append(year)
+//                    .append("-").append(month+1).append("-").append(day).toString().trim();
+//
+//
+//            startdate.setText(startDate);
+//
+//        }
+//    };
     public void onSearch(String query) {
 
         ArrayList<Vender> contactsBeenLocal = new ArrayList<>();

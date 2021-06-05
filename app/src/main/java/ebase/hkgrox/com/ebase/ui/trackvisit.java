@@ -1,17 +1,25 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +38,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class trackvisit extends AppCompatActivity {
 
     Button startdate, enddate, submit;
@@ -41,6 +52,7 @@ public class trackvisit extends AppCompatActivity {
     List<Vender> arrylist;
     USER user;
     SearchView searchView;
+    int mYear, mMonth, mDay, mHour, mMinute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,17 +109,66 @@ public class trackvisit extends AppCompatActivity {
         startdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDatePicker();
+//                openDatePicker();
+                Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(trackvisit.this,
+                        new android.app.DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                                endDate = new StringBuilder().append(year).
+                                        append("-").append(month+1).append("-").append(day).toString().trim();
+                                startdate.setText(endDate);
+                            }
+                        },mYear,mMonth,mDay);
+
+                datePickerDialog.show();
             }
         });
         enddate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                endDatePicker();
+                Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(trackvisit.this,
+                        new android.app.DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                                endDate = new StringBuilder().append(year).
+                                        append("-").append(month+1).append("-").append(day).toString().trim();
+                                enddate.setText(endDate);
+                            }
+                        },mYear,mMonth,mDay);
+
+                datePickerDialog.show();
+//                endDatePicker();
             }
         });
     }
 
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1);
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(trackvisit.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
 
     private void openDatePicker() {
         Calendar cal = Calendar.getInstance(TimeZone.getDefault()); // Get current date
@@ -232,7 +293,10 @@ public class trackvisit extends AppCompatActivity {
     public void report()
     {
         MUtil.showProgressDialog(trackvisit.this);
-        Retrofit retrofit=new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build();
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+        Retrofit retrofit=new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create(gson)).build();
         Apireport apireport=retrofit.create(Apireport.class);
         Call<List<Vender>> call=apireport.gettrackvisit(startDate,endDate,user.getMOBILE());
         call.enqueue(new Callback<List<Vender>>() {
@@ -308,7 +372,7 @@ public class trackvisit extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Vender>> call, Throwable t) {
-                Toast.makeText(trackvisit.this, "error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(trackvisit.this, "error"+t, Toast.LENGTH_SHORT).show();
             }
         });
 

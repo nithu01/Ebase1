@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -55,14 +56,11 @@ public class StaffEdit extends AppCompatActivity {
         });
 
         
-            MUtil.setToolBarNew(this, "Staff Edit", true);
+        MUtil.setToolBarNew(this, "Staff Edit", true);
 
         btn_get_details = (AppCompatButton) findViewById(R.id.btn_get_details);
         et_name = (Spinner) findViewById(R.id.et_name);
-
         btn_get_details.setText("Edit");
-
-
         MUtil.showProgressDialog(this);
         day_sales = new ArrayList<USER>();
         Retrofit retrofit=new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
@@ -84,14 +82,12 @@ public class StaffEdit extends AppCompatActivity {
                     String email=list.get(i).getEMAIL();
                     String location=list.get(i).getLOCATION();
                     String address=list.get(i).getADDRESS();
-
                     String city=list.get(i).getCITY();
                     String enable=list.get(i).getENABLE();
                     String point=list.get(i).getPOINTS();
                     String pincode=list.get(i).getPINCODE();
                     String password=list.get(i).getPASSWORD();
                     String state=list.get(i).getSTATE();
-
                     String current_sstg=list.get(i).getCURRENT_SSTG();
                     String date=list.get(i).getDATE();
                     String monthaly_collection=list.get(i).getMONTHALY_COLLECTION();
@@ -99,7 +95,6 @@ public class StaffEdit extends AppCompatActivity {
                     String sstg=list.get(i).getSSTG();
                     String today_sstg=list.get(i).getTODAY_SSTG();
                     String current_mct=list.get(i).getCURRENT_MCT();
-
                     String current_mst=list.get(i).getCURRENT_MST();
                     String today_mct=list.get(i).getTODAY_MCT();
                     String today_mst=list.get(i).getTODAY_MST();
@@ -110,21 +105,18 @@ public class StaffEdit extends AppCompatActivity {
                     user.setEMAIL(email);
                     user.setLOCATION(location);
                     user.setADDRESS(address);
-
                     user.setCITY(city);
                     user.setENABLE(enable);
                     user.setPOINTS(point);
                     user.setPINCODE(pincode);
                     user.setPASSWORD(password);
                     user.setSTATE(state);
-
                     user.setCURRENT_SSTG(current_sstg);
                     user.setDATE(date);
                     user.setMONTHALY_COLLECTION(monthaly_collection);
                     user.setMONTHALY_SALE(monthaly_sale);
                     user.setSSTG(sstg);
                     user.setTODAY_SSTG(today_sstg);
-
                     user.setCURRENT_MCT(current_mct);
                     user.setCURRENT_MST(current_mst);
                     user.setTODAY_MCT(today_mct);
@@ -140,6 +132,8 @@ public class StaffEdit extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<USER>> call, Throwable t) {
+                MUtil.dismissProgressDialog();
+                Toast.makeText(StaffEdit.this,"No Data",Toast.LENGTH_SHORT).show();
 
             }
         });

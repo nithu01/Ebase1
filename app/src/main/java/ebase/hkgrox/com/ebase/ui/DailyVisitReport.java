@@ -11,6 +11,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
@@ -18,6 +19,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -46,6 +49,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class DailyVisitReport extends AppCompatActivity implements LocationListener {
 
     EditText contctperson, order, remark, orderdetail, mobil, vphone, vemail, vcategory, vsegment, vaddress, vcity, vpm;
@@ -71,7 +79,7 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
 
         state = (AutoCompleteTextView) findViewById(R.id.state);
         area = (AutoCompleteTextView) findViewById(R.id.area);
-
+        locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         party = (AutoCompleteTextView) findViewById(R.id.party);
         vphone = (EditText) findViewById(R.id.phone);
         vemail = (EditText) findViewById(R.id.email);
@@ -86,7 +94,6 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
         btncheckin = (Button) findViewById(R.id.checkin);
         linearLayout1 = (LinearLayout) findViewById(R.id.linearlayout1);
         linearLayout2 = (LinearLayout) findViewById(R.id.linearlayout2);
-
 
 
         user = (USER) getIntent().getExtras().getSerializable("DATA");
@@ -104,10 +111,10 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
         contctperson = (EditText) findViewById(R.id.contactperson);
         order = (EditText) findViewById(R.id.euroilsorder);
         remark = (EditText) findViewById(R.id.remarks);
-       // spinner=(Spinner)findViewById(R.id.status);
+        // spinner=(Spinner)findViewById(R.id.status);
         submit = (Button) findViewById(R.id.submitbtn);
 
-        ArrayAdapter arrayAdapter=new ArrayAdapter(DailyVisitReport.this,android.R.layout.simple_spinner_item,status);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(DailyVisitReport.this, android.R.layout.simple_spinner_item, status);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
         //spinner.setAdapter(arrayAdapter);
         state.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -179,17 +186,17 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
                 Apiorder apiorder = retrofit.create(Apiorder.class);
 
                 // Call<List<Vender>> call=apiorder.order(user.getNAME(),user.getMOBILE(),vender.getParty(),vender.getPhone(),contctperson.getText().toString(),order.getText().toString(),MUtil.getCurrentYear(),MUtil.getCurrentMonth(),MUtil.getDayOfMonth(),MUtil.getCurrentTime(),remark.getText().toString(),status.getText().toString());
-                Call<List<Vender>> call = apiorder.order(checkin,checkout,user.getNAME(), user.getMOBILE(), vparty, phone,order.getText().toString(), orderdetail.getText().toString(),checkin_date, MUtil.getTodayDate(), MUtil.getCurrentTime(),checkintime, remark.getText().toString(),"closed");
+                Call<List<Vender>> call = apiorder.order(checkin, checkout, user.getNAME(), user.getMOBILE(), vparty, phone, order.getText().toString(), orderdetail.getText().toString(), checkin_date, MUtil.getTodayDate(), MUtil.getCurrentTime(), checkintime, remark.getText().toString(), "closed");
 
                 call.enqueue(new Callback<List<Vender>>() {
                     @Override
                     public void onResponse(Call<List<Vender>> call, Response<List<Vender>> response) {
 
-                       // MUtil.showInfoAlertDialog(DailyVisitReport.this, "Record inserted...");
+                        // MUtil.showInfoAlertDialog(DailyVisitReport.this, "Record inserted...");
                         MUtil.dismissProgressDialog();
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(DailyVisitReport.this);
                         builder1.setMessage("Record inserted");
-                              builder1.setCancelable(true);
+                        builder1.setCancelable(true);
 
                         builder1.setPositiveButton(
                                 "ok",
@@ -220,7 +227,6 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
                                 });
 
 
-
                         AlertDialog alert11 = builder1.create();
                         alert11.show();
 
@@ -234,20 +240,25 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 linearLayout1.setVisibility(View.VISIBLE);
-                checkin_date=MUtil.getTodayDate();
-                locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                checkintime=MUtil.getCurrentTime();
+                checkin_date = MUtil.getTodayDate();
+
+                checkintime = MUtil.getCurrentTime();
                 if (!locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     showalertoff();
+                    // Toast.makeText(DailyVisitReport.this,"Latitude:1" ,Toast.LENGTH_SHORT).show();
 
                 } else if (locationmanager.isProviderEnabled(locationmanager.GPS_PROVIDER)) {
                     //getlocation();
-                    if (ActivityCompat.checkSelfPermission(DailyVisitReport.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(DailyVisitReport.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    //Toast.makeText(DailyVisitReport.this,"Latitude:2",Toast.LENGTH_SHORT).show();
+                    if (!checkPermission()) {
+                        requestPermission();
+                        //  createFile();
+                        //  Toast.makeText(DownloadCoupon.this,"",Toast.LENGTH_SHORT).show();
+                    } else {
 
-                        return;
+                        Location location = locationmanager.getLastKnownLocation(locationmanager.NETWORK_PROVIDER);
+                        onLocationChanged(location);
                     }
-                    Location location = locationmanager.getLastKnownLocation(locationmanager.NETWORK_PROVIDER);
-                    onLocationChanged(location);
 
                 }
                 getdata();
@@ -255,11 +266,75 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
 
             }
         });
-
-
-
-
     }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, 1);
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(DailyVisitReport.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+                    if (locationAccepted) {
+                        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }else{
+                            Location location = locationmanager.getLastKnownLocation(locationmanager.NETWORK_PROVIDER);
+                            onLocationChanged(location);
+                        }
+
+                    }
+                    else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
+                                showMessageOKCancel("You need to allow access to both the permissions",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE},
+                                                            1);
+                                                }
+                                            }
+                                        });
+                                return;
+                            }
+                        }
+
+                    }
+                }
+
+
+                break;
+        }
+    }
+
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
     public void showInfoAlertDialog(final Context context, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(message)
@@ -275,9 +350,7 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }
-
-
-/*
+    /*
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -380,6 +453,9 @@ public class DailyVisitReport extends AppCompatActivity implements LocationListe
 
         checkin=herelocation(location.getLatitude(),location.getLongitude());
         checkout=herelocation(location.getLatitude(),location.getLongitude());
+
+        Toast.makeText(DailyVisitReport.this,"Latitude:" + checkin + ", Longitude:" + checkout,Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import ebase.hkgrox.com.ebase.Api.ApiGifts;
+import ebase.hkgrox.com.ebase.ApiService;
 import ebase.hkgrox.com.ebase.AppController;
 import ebase.hkgrox.com.ebase.Config;
 import ebase.hkgrox.com.ebase.GetgiftApi;
@@ -39,6 +41,7 @@ import ebase.hkgrox.com.ebase.R;
 import ebase.hkgrox.com.ebase.UserpointApi;
 import ebase.hkgrox.com.ebase.bean.COUPON;
 import ebase.hkgrox.com.ebase.bean.CouponRedeem;
+import ebase.hkgrox.com.ebase.bean.CurrentPointResponse;
 import ebase.hkgrox.com.ebase.bean.GIFTS;
 import ebase.hkgrox.com.ebase.bean.USER;
 import ebase.hkgrox.com.ebase.util.AppUtil;
@@ -70,15 +73,31 @@ public class GIFT extends AppCompatActivity implements View.OnClickListener {
     // String login_url2 = "http://192.168.0.101";
     //String gifturl="http://192.168.0.103/ebase/redeemgift.php";
     String gifturl="http://onlineappm.euroils.com/ebase/redeemgift.php";
+    TextView btnCouponGifts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_gifts);
         MUtil.showProgressDialog(this);
         findViews();
-        user = (USER) getIntent().getExtras().getSerializable("DATA");
-        setData();
 
+
+        user = (USER) getIntent().getExtras().getSerializable("DATA");
+
+            setData();
+
+
+        btnCouponGifts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Intent intent = new Intent(HomePageActivity.this,Coupon)
+                Intent intent = new Intent(GIFT.this, FirstPage.class);
+                intent.putExtra("DATA", "user");
+                startActivity(intent);
+
+            }
+        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         MUtil.setToolBarNew(this, "Redeem Gifts", true);
@@ -94,16 +113,68 @@ public class GIFT extends AppCompatActivity implements View.OnClickListener {
             btnAddCoupon.setVisibility(View.GONE);
         }*/
     }
+    public void getdata(){
+//        Toast.makeText(UserPointsActivity.this,"Success",Toast.LENGTH_SHORT).show();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService apiService = retrofit.create(ApiService.class);
+        Call<List<CouponRedeem>> listCall= apiService.pr_points(user.getMOBILE());
+        listCall.enqueue(new Callback<List<CouponRedeem>>() {
+            @Override
+            public void onResponse(Call<List<CouponRedeem>> call, retrofit2.Response<List<CouponRedeem>> response) {
 
+                MUtil.dismissProgressDialog();
+                for(int i =0 ;i<response.body().size();i++){
+                    tvTotalPoints.setText(response.body().get(i).getTP());
+                    userpt = response.body().get(i).getTP();
+                    giftpoint();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<CouponRedeem>> call, Throwable t) {
+                Toast.makeText(GIFT.this,""+t,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void setData() {
 
         phn=user.getMOBILE();
 
-        userpoint();
+        if(user.getDEGINATION().equals("Premium Retailer")){
+//            premium_retailer_point();
+            getdata();
+        }else{
+            userpoint();
+        }
         userName.setText("Welcome "+user.getNAME());
 
     }
+    public void premium_retailer_point(){
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService userpointApi=retrofit.create(ApiService.class);
+        Call<List<CurrentPointResponse>> call=userpointApi.getcurrentPoint(phn);
+        call.enqueue(new Callback<List<CurrentPointResponse>>() {
+            @Override
+            public void onResponse(Call<List<CurrentPointResponse>> call, retrofit2.Response<List<CurrentPointResponse>> response) {
 
+                //Toast.makeText(UserPointsActivity.this,"  "+response,Toast.LENGTH_SHORT).show();
+                List<CurrentPointResponse> list=response.body();
+                for(int i=0;i<list.size();i++){
+                    pt=list.get(i).getTotalPoints();
+                }
+                // Toast.makeText(UserPointsActivity.this,"Response"+pt,Toast.LENGTH_SHORT).show();
+                userpt =pt;
+                giftpoint();
+              //  tvTotal.setText(userpt);
+            }
+
+            @Override
+            public void onFailure(Call<List<CurrentPointResponse>> call, Throwable t) {
+                Toast.makeText(GIFT.this,"Error...",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void userpoint() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
         UserpointApi userpointApi=retrofit.create(UserpointApi.class);
@@ -191,6 +262,7 @@ public class GIFT extends AppCompatActivity implements View.OnClickListener {
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
     private void findViews() {
+        btnCouponGifts=findViewById(R.id.btn_coupon_gifts);
         tvTotalPoints = (TextView) findViewById(R.id.tv_total_points);
         btnAddCoupon = (AppCompatButton) findViewById(R.id.btn_add_coupon);
         etCoupon = (EditText) findViewById(R.id.et_coupon);

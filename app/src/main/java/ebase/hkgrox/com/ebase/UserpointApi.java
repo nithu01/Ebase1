@@ -12,6 +12,11 @@ import retrofit2.http.Query;
  */
 
 public interface UserpointApi {
+
     @GET("/ebase/userpt.php")
     Call<List<USER>> userpoint(@Query("phn")String phn);
+
+    @GET("/ebase/userpt.php")
+    Call<List<USER>> premiumret_point(@Query("phn")String phn);
+
 }

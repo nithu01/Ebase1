@@ -2,6 +2,7 @@ package ebase.hkgrox.com.ebase.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -132,6 +133,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String city=list.get(i).getCITY();
                         String enable=list.get(i).getENABLE();
                         String point=list.get(i).getPOINTS();
+//                        Log.d("TAG","USSERDATA"+list.get(i).getPOINTS());
+//                        String point="";
                         String pincode=list.get(i).getPINCODE();
                         String password=list.get(i).getPASSWORD();
                         String state=list.get(i).getSTATE();

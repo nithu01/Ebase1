@@ -26,9 +26,60 @@ public class CouponRedeem implements Serializable {
         this.srn = srn;
     }
 
+    @SerializedName("Bpr")
+    @Expose
+    private String Bpr;
+
+    @SerializedName("Apr")
+    @Expose
+    private String Apr;
+
+
+    @SerializedName("TP")
+    @Expose
+    private String TP;
+
+    public String getTP() {
+        return TP;
+    }
+
+    public void setTP(String TP) {
+        this.TP = TP;
+    }
+
+    @SerializedName("DOJ")
+    @Expose
+    private String doj;
+
+    public String getBpr() {
+        return Bpr;
+    }
+
+    public void setBpr(String bpr) {
+        Bpr = bpr;
+    }
+
+    public String getApr() {
+        return Apr;
+    }
+
+    public void setApr(String apr) {
+        Apr = apr;
+    }
+
+    public String getDoj() {
+        return doj;
+    }
+
+    public void setDoj(String doj) {
+        this.doj = doj;
+    }
+
     @SerializedName("GP")
     @Expose
     private String GP;
+
+
 
     public String getGP() {
         return GP;

@@ -1,19 +1,24 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -28,45 +33,50 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ebase.hkgrox.com.ebase.ApiService;
 import ebase.hkgrox.com.ebase.Config;
 import ebase.hkgrox.com.ebase.GiftpointApi;
 import ebase.hkgrox.com.ebase.R;
 import ebase.hkgrox.com.ebase.UserpointApi;
 import ebase.hkgrox.com.ebase.bean.COUPON;
 import ebase.hkgrox.com.ebase.bean.CouponRedeem;
+import ebase.hkgrox.com.ebase.bean.CurrentPointResponse;
+import ebase.hkgrox.com.ebase.bean.ReportReponse;
 import ebase.hkgrox.com.ebase.bean.USER;
 import ebase.hkgrox.com.ebase.util.AppUtil;
 import ebase.hkgrox.com.ebase.util.MUtil;
 import ebase.hkgrox.com.ebase.util.MySingleton;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AddCouponActivity extends AppCompatActivity implements View.OnClickListener {
 
     private USER user;
     private TextView userName;
-
-
-
-
     AlertDialog.Builder builder;
     String phn;
     Config config;
-
-   String login_url2 =config.ip_url;//"http://192.168.0.103";
+    String point="";
+    String login_url2 =config.ip_url;//"http://192.168.0.103";
     String login_url=config.checkcoupon;
     String login_url1=config.updatecoupon;
     String pt,gpt,userpt,giftpt;
     int fin;
     String coupons;
-    ImageView img_Scan;
+    LinearLayout img_Scan;
     private static final int REQUEST_CODE_QR_SCAN = 101;
+    private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +87,10 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
         user = (USER) getIntent().getExtras().getSerializable("DATA");
         img_Scan=findViewById(R.id.scan);
         img_Scan.setOnClickListener(this);
-        setData();
+
+
+            setData();
+
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -91,7 +104,84 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    public void getdata(){
+//        Toast.makeText(UserPointsActivity.this,"Success",Toast.LENGTH_SHORT).show();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService apiService = retrofit.create(ApiService.class);
+        Call<List<CouponRedeem>> listCall= apiService.pr_points(user.getMOBILE());
+        listCall.enqueue(new Callback<List<CouponRedeem>>() {
+            @Override
+            public void onResponse(Call<List<CouponRedeem>> call, retrofit2.Response<List<CouponRedeem>> response) {
 
+                MUtil.dismissProgressDialog();
+                for(int i =0 ;i<response.body().size();i++){
+                    tvTotalPoints.setText(response.body().get(i).getTP());
+                    userpt =response.body().get(i).getTP();
+                    giftpoint();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<CouponRedeem>> call, Throwable t) {
+                Toast.makeText(AddCouponActivity.this,""+t,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void getpremiumretailer(){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+//        Toast.makeText(AddCouponActivity.this,"/"+month+1+"/"+year,Toast.LENGTH_SHORT).show();
+        ApiService apiService=new Retrofit.Builder().baseUrl(Config.ip_url).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build().create(ApiService.class);
+        CompositeDisposable compositeDisposiable=new CompositeDisposable();
+        compositeDisposiable.add(apiService.getpremiumpoint("/"+month+1+"/"+year,user.getMOBILE())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse,this::handleError));
+
+    }
+    public void handleResponse(List<ReportReponse> reportReponse){
+        if(Integer.parseInt(reportReponse.get(0).getPOINT())>250)
+        {
+          //  Toast.makeText(AddCouponActivity.this,"less",Toast.LENGTH_SHORT).show();
+            point="double";
+        }else{
+            point="";
+        }
+
+    }
+    public void handleError(Throwable throwable){
+        Toast.makeText(this,""+throwable,Toast.LENGTH_SHORT).show();
+
+    }
+    public void premium_retailer_point(){
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService userpointApi=retrofit.create(ApiService.class);
+        Call<List<CurrentPointResponse>> call=userpointApi.getcurrentPoint(phn);
+        call.enqueue(new Callback<List<CurrentPointResponse>>() {
+            @Override
+            public void onResponse(Call<List<CurrentPointResponse>> call, retrofit2.Response<List<CurrentPointResponse>> response) {
+
+                List<CurrentPointResponse> list=response.body();
+                for(int i=0;i<list.size();i++){
+                    Toast.makeText(AddCouponActivity.this,"  "+list.get(i).getTotalPoints(),Toast.LENGTH_SHORT).show();
+
+                    pt=list.get(i).getTotalPoints();
+                }
+                // Toast.makeText(UserPointsActivity.this,"Response"+pt,Toast.LENGTH_SHORT).show();
+                userpt =pt;
+                giftpoint();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<CurrentPointResponse>> call, Throwable t) {
+                Toast.makeText(AddCouponActivity.this,"Error...",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void setData() {
        /* if (user != null && user.getPOINTS() != null) {
             tvTotalPoints.setText(user.getPOINTS());
@@ -101,7 +191,13 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
 
         phn=user.getMOBILE();
 
-        userpoint();
+        if(user.getDEGINATION().equals("Premium Retailer")||user.getUpgrade().equals("yes")){
+//            premium_retailer_point();
+            getdata();
+        }else{
+            userpoint();
+        }
+
        /*
 */
 
@@ -162,13 +258,16 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void total() {
+        int pt=0;
         if(userpt==null) {
             int ut=0;
             int gp=0;
             fin=ut-gp;
-            String finalpt = String.valueOf(fin);
-            tvTotalPoints.setText(finalpt);
-            MUtil.dismissProgressDialog();
+
+                String finalpt = String.valueOf(fin);
+                tvTotalPoints.setText(finalpt);
+                MUtil.dismissProgressDialog();
+
         }
            else if (giftpt == null) {
                 int gp = 0;
@@ -178,10 +277,14 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
                 MUtil.dismissProgressDialog();
 
             } else {
-                fin = Integer.parseInt(userpt) - Integer.parseInt(giftpt);
-                String finalpt = String.valueOf(fin);
-                tvTotalPoints.setText(finalpt);
-                MUtil.dismissProgressDialog();
+
+                    fin = Integer.parseInt(userpt) - Integer.parseInt(giftpt);
+                    String finalpt = String.valueOf(fin);
+                    tvTotalPoints.setText(finalpt);
+                    MUtil.dismissProgressDialog();
+
+
+
 
         }
     }
@@ -249,6 +352,11 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
             etCoupon.setText("");
             btnAddCoupon.setVisibility(View.GONE);
         } else if(v==img_Scan){
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_DENIED){
+                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+                return;
+            }
             Intent i = new Intent(AddCouponActivity.this, QrCodeActivity.class);
             startActivityForResult( i,REQUEST_CODE_QR_SCAN);
         } else if (v == add) {
@@ -291,11 +399,12 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
 
 
 */
-
+            MUtil.showProgressDialog(AddCouponActivity.this);
             coupons=etCoupon.getText().toString();
             StringRequest stringRequest=new StringRequest(Request.Method.POST, login_url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
+                    MUtil.dismissProgressDialog();
                    // Toast.makeText(getApplicationContext(),"Response"+response,Toast.LENGTH_SHORT).show();
                     try {
                         JSONArray jsonArray=new JSONArray(response);
@@ -339,6 +448,7 @@ public class AddCouponActivity extends AppCompatActivity implements View.OnClick
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    MUtil.dismissProgressDialog();
                   //  Toast.makeText(AddCouponActivity.this,"jdfh",Toast.LENGTH_SHORT).show();
                 }
             })

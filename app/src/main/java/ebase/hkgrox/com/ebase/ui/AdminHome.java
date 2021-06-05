@@ -1,26 +1,36 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -32,14 +42,21 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import ebase.hkgrox.com.ebase.ApiService;
 import ebase.hkgrox.com.ebase.Config;
 import ebase.hkgrox.com.ebase.DownloadCoupon;
 import ebase.hkgrox.com.ebase.GetUserPointApi;
+import ebase.hkgrox.com.ebase.Premium_Retailer;
 import ebase.hkgrox.com.ebase.R;
+import ebase.hkgrox.com.ebase.RegisterationActivity;
 import ebase.hkgrox.com.ebase.bean.COUPON;
+import ebase.hkgrox.com.ebase.bean.Registerdevice;
+import ebase.hkgrox.com.ebase.bean.ReportReponse;
 import ebase.hkgrox.com.ebase.bean.USER;
 import ebase.hkgrox.com.ebase.util.AppUtil;
 import ebase.hkgrox.com.ebase.util.MUtil;
@@ -49,26 +66,143 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class AdminHome extends AppCompatActivity implements View.OnClickListener {
 
     private USER user;
     private Button btnGifts;
-    private Button btn_vender_details;
-    private Button btn_change_password,btn_add_coupon;
+    private Button btn_vender_details,upgrade_user;
+    private Button btn_change_password,btn_add_coupon,btn_address,btn_send_notification,btn_premium_retailer,btn_registeration,notification,btn_pr_points;
     Config config;
     String login_url2 =config.ip_url;
     //String login_url2="http://192.168.0.103";
+    int month,year;
+    String date,date2;
+    Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_home);
+        calendar=Calendar.getInstance();
         findViews();
+        savePemiumRetailer();
+//      calendar.get(Calendar.DATE)
+        if(calendar.getActualMaximum(Calendar.DAY_OF_MONTH)==28){
+
+            savedoublepoints();
+        }
         user = (USER) getIntent().getExtras().getSerializable("DATA");
         setNavigationDrawer();
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (task.isSuccessful()){
+                            String token = task.getResult().getToken();
+                            Log.d("TAG","token"+token);
+                            storetoken(token);
+                        }
+                    }
+                });
 
     }
 
+    public void savedoublepoints(){
+        month=calendar.get(Calendar.MONTH);
+        year=calendar.get(Calendar.YEAR);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-");
+        date=sdf.format(calendar.getTime());
+//        date="2021-02-";
+        Retrofit retrofit=new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService apiService=retrofit.create(ApiService.class);
+        Call<com.google.android.gms.common.api.Response> call=apiService.doublepoints(date);
+        call.enqueue(new Callback<com.google.android.gms.common.api.Response>() {
+            @Override
+            public void onResponse(Call<com.google.android.gms.common.api.Response> call, Response<com.google.android.gms.common.api.Response> response) {
+                Toast.makeText(AdminHome.this,"Success",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<com.google.android.gms.common.api.Response> call, Throwable t) {
+                // Toast.makeText(AdminHome.this,""+t,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void savePemiumRetailer(){
+
+        month=calendar.get(Calendar.MONTH);
+        year=calendar.get(Calendar.YEAR);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-");
+        date=sdf.format(calendar.getTime());
+//        date="2021-02-";
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+        date2=sdf2.format(calendar.getTime());
+//        date2="2021-02-28";
+       // Toast.makeText(AdminHome.this,"Success"+date,Toast.LENGTH_SHORT).show();
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit=new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        ApiService apiService=retrofit.create(ApiService.class);
+        Call<List<ReportReponse>> call=apiService.saveretailer(date,date2);
+        call.enqueue(new Callback<List<ReportReponse>>() {
+            @Override
+            public void onResponse(Call<List<ReportReponse>> call, Response<List<ReportReponse>> response) {
+                 //  Toast.makeText(AdminHome.this,"Success",Toast.LENGTH_SHORT).show();
+                totalpoints();
+            }
+
+            @Override
+            public void onFailure(Call<List<ReportReponse>> call, Throwable t) {
+               // Toast.makeText(AdminHome.this,""+t,Toast.LENGTH_SHORT).show();
+                totalpoints();
+            }
+        });
+    }
+    public void totalpoints(){
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+        Retrofit retrofit=new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        ApiService apiService=retrofit.create(ApiService.class);
+        Call<List<ReportReponse>> call=apiService.totalpoints();
+        call.enqueue(new Callback<List<ReportReponse>>() {
+            @Override
+            public void onResponse(Call<List<ReportReponse>> call, Response<List<ReportReponse>> response) {
+                //  Toast.makeText(AdminHome.this,"Success",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<List<ReportReponse>> call, Throwable t) {
+                // Toast.makeText(AdminHome.this,""+t,Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+    public void storetoken(String token)
+    {
+        //  Toast.makeText(AdminHome.this, "Welcome to Shree Shiv Sewak"+user.getMOBILE(), Toast.LENGTH_SHORT).show();
+
+        Retrofit retrofit=new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService apiinterface=retrofit.create(ApiService.class);
+        Call<List<Registerdevice>> call=apiinterface.storetoken(token,user.getMOBILE());
+        call.enqueue(new Callback<List<Registerdevice>>() {
+            @Override
+            public void onResponse(Call<List<Registerdevice>> call, Response<List<Registerdevice>> response) {
+
+                Toast.makeText(AdminHome.this, "Welcome to Euroils", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Registerdevice>> call, Throwable t) {
+                Toast.makeText(AdminHome.this,"Error",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void setNavigationDrawer() {
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -92,35 +226,6 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
         TextView navAbout = (TextView) navigationView.findViewById(R.id.nav_about);
         TextView navContactUs = (TextView) navigationView.findViewById(R.id.nav_contact_us);
         TextView nav_enquiry = (TextView) navigationView.findViewById(R.id.nav_enquiry);
-
-        /*navName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminHome.this,ProfileActivity.class);
-                startActivity(intent);
-                drawer.closeDrawer(GravityCompat.START);
-            }
-        });
-
-        navEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminHome.this,ProfileActivity.class);
-                intent.putExtra("DATA", user);
-                startActivity(intent);
-                drawer.closeDrawer(GravityCompat.START);
-            }
-        });
-        navImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminHome.this,ProfileActivity.class);
-                intent.putExtra("DATA", user);
-                startActivity(intent);
-                drawer.closeDrawer(GravityCompat.START);
-            }
-        });*/
-
 
         navHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,7 +291,7 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
         couponGifts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AdminHome.this, CouponGifts.class);
+                Intent intent = new Intent(AdminHome.this, FirstPage.class);
                 // intent.putExtra(AppUtil.DATA,user);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -201,7 +306,7 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+//            startActivity(new Intent(AdminHome.class,M));
         }
     }
 
@@ -229,6 +334,15 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
     private void findViews() {
+        btn_pr_points=findViewById(R.id.btn_pr_points_tally);
+        upgrade_user=findViewById(R.id.upgrade);
+        notification=findViewById(R.id.notification);
+        notification.setOnClickListener(this);
+        btn_pr_points.setOnClickListener(this);
+        btn_registeration=findViewById(R.id.btn_registeration);
+        btn_premium_retailer=findViewById(R.id.premium_retailer);
+        btn_send_notification=findViewById(R.id.btn_notification);
+        btn_address=findViewById(R.id.btn_address);
         appbar = (AppBarLayout) findViewById(R.id.appbar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
       //  newadd=(Button)findViewById(R.id.btn_newadd_coupon);
@@ -251,7 +365,11 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
         btnGifts = (Button) findViewById(R.id.btn_gifts);
 
        // addcoupon.setOnClickListener(this);
+        upgrade_user.setOnClickListener(this);
+        btn_send_notification.setOnClickListener(this);
+        btn_address.setOnClickListener(this);
         report.setOnClickListener(this);
+        btn_premium_retailer.setOnClickListener(this);
         btn_add_coupon.setOnClickListener(this);
         btngiftstatus.setOnClickListener(this);
         btncouponstatus.setOnClickListener(this);
@@ -267,6 +385,8 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
         btnVendersEdit.setOnClickListener(this);
         btn_vender_details.setOnClickListener(this);
         btn_change_password.setOnClickListener(this);
+        btn_registeration.setOnClickListener(this);
+
     }
 
     /**
@@ -279,6 +399,27 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
     String[] couponArray ;
     @Override
     public void onClick(View v) {
+        if(v==btn_address){
+            startActivity(new Intent(AdminHome.this,UserAddress.class));
+        }
+        if(v==upgrade_user){
+            startActivity(new Intent(AdminHome.this,upgrade_user.class));
+        }
+        if(v==btn_registeration){
+            startActivity(new Intent(AdminHome.this, RegisterationActivity.class));
+        }
+        if(v==btn_send_notification){
+            startActivity(new Intent(AdminHome.this,SendNotification.class).putExtra("DATA", user));
+        }
+        if(v==notification){
+            startActivity(new Intent(AdminHome.this,MessageActivity.class));
+        }
+//        if(v==btn_pr_points){
+//            startActivity(new Intent(AdminHome.this,MessageActivity.class));
+//        }
+        if(v==btn_pr_points){
+            startActivity(new Intent(AdminHome.this,Pr_points_tally.class));
+        }
         if (v == btnCouponSummary) {
             Intent intent = new Intent(this, CouponSummary.class);
             intent.putExtra("DATA", user);
@@ -306,8 +447,8 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
             intent.putExtra("PAGE", "download");
             startActivity(intent);
             //createFile();
-           // String readFile = readFile();
-           //couponArray = splitString(readFile);
+            // String readFile = readFile();
+            //couponArray = splitString(readFile);
             //executeExcel();
         } else if (v == btnPointsTally) {
             Intent intent = new Intent(this, PointsDetails.class);
@@ -351,7 +492,16 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
             intent.putExtra("PAGE", "vender");
             startActivity(intent);
         }else if (v == btn_vender_details) {
-            createFileVendor();
+            MUtil.showProgressDialog(this);
+             if (!checkPermission()) {
+                 requestPermission();
+                 //  createFile();
+                 //  Toast.makeText(DownloadCoupon.this,"",Toast.LENGTH_SHORT).show();
+             } else {
+
+                 createFileVendor();
+             }
+
         } else if (v == btn_change_password) {
             Intent intent = new Intent(this,ChangePasswordActivity.class);
             intent.putExtra("DATA", user);
@@ -367,15 +517,69 @@ public class AdminHome extends AppCompatActivity implements View.OnClickListener
             intent.putExtra("DATA",user);
             startActivity(intent);
         }
+         else if(v==btn_premium_retailer)
+         {
+             Intent intent=new Intent(this, PremiumRetailerReport.class);
+             intent.putExtra("DATA", user);
+             startActivity(intent);
+         }
 
     }
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean cameraAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (locationAccepted && cameraAccepted) {
+                        createFileVendor();
+                    }
+                    else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
+                                showMessageOKCancel("You need to allow access to both the permissions",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE},
+                                                            1);
+                                                }
+                                            }
+                                        });
+                                return;
+                            }
+                        }
+
+                    }
+                }
 
 
-
-
+                break;
+        }
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(AdminHome.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
     private void createFileVendor() {
 
-        MUtil.showProgressDialog(this);
+
         List<USER> arraylist=new ArrayList<>();
         Retrofit retrofit=new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
         GetUserPointApi getUserPointApi=retrofit.create(GetUserPointApi.class);

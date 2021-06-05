@@ -74,14 +74,21 @@ public class AdapterExecutives extends RecyclerView.Adapter<AdapterExecutives.Vi
 
             holder.tvName.setText("" + user.getNAME());
             holder.mobile.setText("" + user.getMOBILE());
-            holder.month_sale.setText("Total Points - "+user.getTP()+"");
+//            Toast.makeText(context,""+user.getDEGINATION(),Toast.LENGTH_SHORT).show();
+            if(user.getDEGINATION().equals("Premium Retailer")){
+                holder.month_sale.setText("Total Points - "+(Integer.parseInt(user.getTP())+Integer.parseInt(user.getTP())));
+
+            }else{
+                holder.month_sale.setText("Total Points - "+user.getTP()+"");
+
+            }
         holder.tvgp.setText("Gift Redeemed - "+user.getGP()+"");
         holder.tvrp.setText("Remaining Points - "+user.getRP()+"");
             holder.degination.setVisibility(View.GONE);
         holder.btndetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,""+user.getMOBILE(),Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context,""+user.getMOBILE(),Toast.LENGTH_SHORT).show();
                 Intent detail=new Intent(context, CouponAdminUserDetail.class);
                 detail.putExtra("DATA",user);
                 context.startActivity(detail);
@@ -91,7 +98,7 @@ public class AdapterExecutives extends RecyclerView.Adapter<AdapterExecutives.Vi
         holder.btngift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,""+user.getMOBILE(),Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context,""+user.getMOBILE(),Toast.LENGTH_SHORT).show();
                 Intent detail=new Intent(context, GiftAdminUserDetail.class);
                 detail.putExtra("DATA",user);
                 context.startActivity(detail);

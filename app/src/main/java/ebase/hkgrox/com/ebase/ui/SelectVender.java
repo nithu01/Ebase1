@@ -40,9 +40,9 @@ public class SelectVender extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_vender);
+
         user = (USER) getIntent().getExtras().getSerializable("DATA");
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         trackvisit=(Button)findViewById(R.id.trackvisit);

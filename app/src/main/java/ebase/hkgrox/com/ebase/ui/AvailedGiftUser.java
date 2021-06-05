@@ -35,6 +35,7 @@ public class AvailedGiftUser extends AppCompatActivity implements View.OnClickLi
     // String login_url2 = "http://192.168.0.103";
     private TextView userName;
     String phn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

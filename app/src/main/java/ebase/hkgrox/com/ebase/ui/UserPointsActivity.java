@@ -6,24 +6,30 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
+import ebase.hkgrox.com.ebase.ApiService;
 import ebase.hkgrox.com.ebase.Config;
 import ebase.hkgrox.com.ebase.CouponAdminUserDetail;
 import ebase.hkgrox.com.ebase.GiftpointApi;
 import ebase.hkgrox.com.ebase.R;
 import ebase.hkgrox.com.ebase.UserpointApi;
 import ebase.hkgrox.com.ebase.bean.CouponRedeem;
+import ebase.hkgrox.com.ebase.bean.CurrentPointResponse;
 import ebase.hkgrox.com.ebase.bean.USER;
 import ebase.hkgrox.com.ebase.util.MUtil;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -35,34 +41,51 @@ public class UserPointsActivity extends AppCompatActivity implements View.OnClic
    // String login_url1="http://192.168.0.101/ebase/updatecoupon.php";
 
    // String login_url2 = "http://192.168.0.103";
-   Config config;
-    Button button;
+    Config config;
+    Button btn_points,btn_pr_retailer,btn_retailer;
     String login_url2 = config.ip_url;
     String login_url=config.ip_url;
-   String login_url1=config.ip_url;
+    String login_url1=config.ip_url;
     AlertDialog.Builder builder;
     String coupons;
     String phn;
     int fin;
     String pt,gpt,giftpt,userpt;
+    TextView txt_premium_retailer_total,txt_premium_retailer,txt_retailer;
+    LinearLayout linearLayout1,linearLayout2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_points);
         MUtil.showProgressDialog(this);
         findViews();
-        user = (USER) getIntent().getExtras().getSerializable("DATA");
-        button=(Button)findViewById(R.id.points);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(UserPointsActivity.this,CouponAdminUserDetail.class);
-                intent.putExtra("DATA",user);
-                startActivity(intent);
-            }
-        });
-        setData();
 
+        user = (USER) getIntent().getExtras().getSerializable("DATA");
+        userName.setText("Welcome "+user.getNAME());
+      //  Toast.makeText(UserPointsActivity.this,""+user.getUpgrade().equals("yes"),Toast.LENGTH_SHORT).show();
+        if(user.getDEGINATION().equals("Premium Retailer") || user.getUpgrade().equals("yes")){
+
+             getdata();
+            linearLayout2.setVisibility(View.VISIBLE);
+            linearLayout1.setVisibility(View.GONE);
+
+        }else{
+
+            setData();
+            linearLayout1.setVisibility(View.VISIBLE);
+            linearLayout2.setVisibility(View.GONE);
+
+        }
+//        button=(Button)findViewById(R.id.points);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent=new Intent(UserPointsActivity.this,CouponAdminUserDetail.class);
+//                intent.putExtra("DATA",user);
+//                startActivity(intent);
+//            }
+//        });
 
 
 
@@ -84,6 +107,37 @@ public class UserPointsActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    public void getdata(){
+//        Toast.makeText(UserPointsActivity.this,"Success",Toast.LENGTH_SHORT).show();
+       Retrofit retrofit = new Retrofit.Builder().baseUrl(Config.ip_url).addConverterFactory(GsonConverterFactory.create()).build();
+       ApiService apiService = retrofit.create(ApiService.class);
+       Call<List<CouponRedeem>> listCall= apiService.pr_points(user.getMOBILE());
+       listCall.enqueue(new Callback<List<CouponRedeem>>() {
+           @Override
+           public void onResponse(Call<List<CouponRedeem>> call, Response<List<CouponRedeem>> response) {
+               MUtil.dismissProgressDialog();
+              // Toast.makeText(UserPointsActivity.this,"Success",Toast.LENGTH_SHORT).show();
+               for(int i =0 ;i<response.body().size();i++){
+
+                   txt_premium_retailer.setText( response.body().get(i).getApr());
+                   if(response.body().get(i).getBpr()==null){
+                       txt_retailer.setText("0");
+
+                   }else{
+                       txt_retailer.setText(response.body().get(i).getBpr());
+
+                   }
+                   txt_premium_retailer_total.setText(response.body().get(i).getTP());
+                //   Toast.makeText(UserPointsActivity.this,""+response.body().get(i).getApr()+response.body().get(i).getBpr(),Toast.LENGTH_SHORT).show();
+               }
+           }
+
+           @Override
+           public void onFailure(Call<List<CouponRedeem>> call, Throwable t) {
+            Toast.makeText(UserPointsActivity.this,""+t,Toast.LENGTH_SHORT).show();
+           }
+       });
+    }
     private void setData() {
        /* if (user != null && user.getPOINTS() != null) {
             tvTotalPoints.setText(user.getPOINTS());
@@ -94,18 +148,46 @@ public class UserPointsActivity extends AppCompatActivity implements View.OnClic
        // final int[] userpt = new int[1];
 
         phn=user.getMOBILE();
+        if(user.getDEGINATION().equals("Premium Retailer")){
+            premium_retailer_point();
+        }else{
+            userpoint();
+        }
 
-        userpoint();
        /*
 */
 
 //fin=Integer.parseInt(userpt) - Integer.parseInt(giftpt);
        // String finalpt=String.valueOf(fin);
         //tvTotalPoints.setText(pt);
-        userName.setText("Welcome "+user.getNAME());
+
 
     }
+    public void premium_retailer_point(){
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService userpointApi=retrofit.create(ApiService.class);
+        Call<List<CurrentPointResponse>> call=userpointApi.getcurrentPoint(phn);
+        call.enqueue(new Callback<List<CurrentPointResponse>>() {
+            @Override
+            public void onResponse(Call<List<CurrentPointResponse>> call, retrofit2.Response<List<CurrentPointResponse>> response) {
 
+                //Toast.makeText(UserPointsActivity.this,"  "+response,Toast.LENGTH_SHORT).show();
+                List<CurrentPointResponse> list=response.body();
+                for(int i=0;i<list.size();i++){
+                    pt=list.get(i).getTotalPoints();
+                }
+                // Toast.makeText(UserPointsActivity.this,"Response"+pt,Toast.LENGTH_SHORT).show();
+                userpt =pt;
+                giftpoint();
+                tvTotal.setText(userpt);
+            }
+
+            @Override
+            public void onFailure(Call<List<CurrentPointResponse>> call, Throwable t) {
+                Toast.makeText(UserPointsActivity.this,"Error...",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void userpoint() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
         UserpointApi userpointApi=retrofit.create(UserpointApi.class);
@@ -201,7 +283,19 @@ public class UserPointsActivity extends AppCompatActivity implements View.OnClic
      * Auto-created on 2017-02-01 20:34:16 by Android Layout Finder
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
+
     private void findViews() {
+        btn_retailer =findViewById(R.id.points_r);
+        btn_retailer.setOnClickListener(this);
+        linearLayout1= findViewById(R.id.linearlayout);
+        linearLayout2=findViewById(R.id.linearlayout1);
+        txt_premium_retailer = findViewById(R.id.premium_retailer);
+        txt_premium_retailer_total = findViewById(R.id.premium_retailer_total);
+        txt_retailer = findViewById(R.id.retailer);
+        btn_points = findViewById(R.id.old_points);
+        btn_pr_retailer = findViewById(R.id.points);
+        btn_points.setOnClickListener(this);
+        btn_pr_retailer.setOnClickListener(this);
         tvTotalPoints = (TextView) findViewById(R.id.tv_total_points);
         tvTotal = (TextView) findViewById(R.id.textView8);
         tvGift = (TextView) findViewById(R.id.textView9);
@@ -213,12 +307,22 @@ public class UserPointsActivity extends AppCompatActivity implements View.OnClic
       //  add.setOnClickListener(this);
     }
 
-    /**
-     * Handle button click events<br />
-     * <br />
-     */
+
     @Override
     public void onClick(View v) {
+        if(v==btn_points){
+            startActivity(new Intent(UserPointsActivity.this, Before_Premium_Retailer.class).putExtra("mobile",user.getMOBILE()));
+
+        }
+        if(v==btn_pr_retailer){
+            startActivity(new Intent(UserPointsActivity.this, CheckAllMonthPremiumRetailer.class).putExtra("DATA",user.getMOBILE()));
+
+        }
+        if(v==btn_retailer){
+            startActivity(new Intent(UserPointsActivity.this, Coupondetails.class).putExtra("mobile",user.getMOBILE()));
+
+        }
+
        /* if (v == btnAddCoupon) {
             Intent intent = new Intent(this,AddCouponActivity.class);
             intent.putExtra("DATA", user);

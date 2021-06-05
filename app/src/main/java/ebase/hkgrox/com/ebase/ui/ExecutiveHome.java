@@ -178,7 +178,7 @@ public class ExecutiveHome extends AppCompatActivity implements View.OnClickList
         couponGifts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ExecutiveHome.this, CouponGifts.class);
+                Intent intent = new Intent(ExecutiveHome.this, FirstPage.class);
                 // intent.putExtra(AppUtil.DATA,user);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);

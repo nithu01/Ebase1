@@ -1,5 +1,8 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -7,9 +10,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +30,7 @@ import java.util.List;
 
 import ebase.hkgrox.com.ebase.Api.Apireport;
 import ebase.hkgrox.com.ebase.Config;
+import ebase.hkgrox.com.ebase.DownloadCoupon;
 import ebase.hkgrox.com.ebase.R;
 import ebase.hkgrox.com.ebase.adapter.dailyreportbyname;
 import ebase.hkgrox.com.ebase.bean.Vender;
@@ -33,6 +40,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class Report_name extends AppCompatActivity {
 
@@ -63,7 +73,15 @@ public class Report_name extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createFilenewVendor();
+                if (!checkPermission()) {
+                    requestPermission();
+                    //  createFile();
+                    //  Toast.makeText(DownloadCoupon.this,"",Toast.LENGTH_SHORT).show();
+                } else {
+
+                    createFilenewVendor();
+                }
+
             }
         });
         //name = (EditText) findViewById(R.id.name);
@@ -177,6 +195,58 @@ public class Report_name extends AppCompatActivity {
                 });
 
     }
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1);
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(Report_name.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean cameraAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (locationAccepted && cameraAccepted) {
+                        createFilenewVendor();
+                    }
+                    else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
+                                showMessageOKCancel("You need to allow access to both the permissions",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE},
+                                                            1);
+                                                }
+                                            }
+                                        });
+                                return;
+                            }
+                        }
+
+                    }
+                }
+
+
+                break;
+        }
+    }
 
     public void createFilenewVendor()
     {
@@ -264,6 +334,7 @@ public class Report_name extends AppCompatActivity {
             }
         });
     }
+
     public void onSearch(String query) {
 
         ArrayList<Vender> contactsBeenLocal = new ArrayList<>();
@@ -309,6 +380,7 @@ public class Report_name extends AppCompatActivity {
             }
         });
     }
+
     private void createFileVendor(ArrayList<Vender> filteredModelList) {
 
      /*   MUtil.showProgressDialog(this);
@@ -400,6 +472,7 @@ public class Report_name extends AppCompatActivity {
         });*/
         createExcelVendor(filteredModelList);
     }
+
     private void createExcelVendor(List<Vender> day_sales) {
 
         HSSFWorkbook wb = new HSSFWorkbook();

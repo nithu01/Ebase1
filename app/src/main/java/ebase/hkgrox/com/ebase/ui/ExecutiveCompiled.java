@@ -2,6 +2,7 @@ package ebase.hkgrox.com.ebase.ui;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -143,7 +144,8 @@ public class ExecutiveCompiled extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<List<USER>> call, Throwable t) {
-
+                MUtil.dismissProgressDialog();
+                Toast.makeText(ExecutiveCompiled.this,""+t,Toast.LENGTH_SHORT).show();
             }
         });
         /*

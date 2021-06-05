@@ -1,7 +1,5 @@
 package ebase.hkgrox.com.ebase.ui;
 
-
-
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +20,7 @@ import ebase.hkgrox.com.ebase.R;
 import ebase.hkgrox.com.ebase.util.MUtil;
 
 public abstract class AddCoupon extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+
     DatePickerDialog datepickerdialog;
     SimpleDateFormat simpledateformat;
     EditText coupon,points;
@@ -31,6 +30,7 @@ public abstract class AddCoupon extends AppCompatActivity implements NavigationV
     TextView textview;
     Date current;
     String endDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

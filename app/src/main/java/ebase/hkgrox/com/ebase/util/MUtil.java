@@ -484,7 +484,7 @@ public class MUtil {
             pd.dismiss();
         pd = new ProgressDialog(context);
         pd.setMessage("Please wait..");
-        pd.setCancelable(false);
+        pd.setCancelable(true);
         pd.show();
     }
 
@@ -817,7 +817,7 @@ public class MUtil {
     }
 
     public static String getCurrentDate() {
-        return new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 
     public static String getTodayDate() {

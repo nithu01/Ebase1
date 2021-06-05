@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/appbar"
-        app:layout_constraintTop_toTopOf="parent">
+              android:id="@+id/appbar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -24,60 +22,61 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <EditText
-        android:id="@+id/edtfrom"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="199dp"
-        android:ems="10"
-        android:hint="From Coupon Ex.1000"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/edtto"
-        android:layout_width="150dp"
+        <EditText
+            android:layout_alignParentLeft="true"
+            android:id="@+id/edtfrom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="199dp"
+            android:inputType="number"
+            android:hint="From Coupon Ex.1000"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/edtto"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="199dp"
+            android:inputType="number"
+            android:hint="To Coupon Ex.5000"
+            />
+
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="199dp"
-        android:ems="10"
-        android:hint="To Coupon Ex.5000"
-        app:layout_constraintHorizontal_bias="0.907"
-        app:layout_constraintLeft_toRightOf="@+id/edtfrom"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:gravity="center"
+        android:text="@string/note"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp"
+      />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btndownload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        android:padding="5dp"
         android:text="Download Excel Sheet"
         android:textAllCaps="false"
         android:textColor="#000000"
         android:textSize="18sp"
         android:visibility="visible"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="325dp"
-        android:layout_marginLeft="100dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginRight="100dp"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/note"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="14sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="258dp"
-        android:layout_marginStart="16dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

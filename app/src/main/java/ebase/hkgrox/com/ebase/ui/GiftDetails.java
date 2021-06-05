@@ -100,9 +100,6 @@ public class GiftDetails extends AppCompatActivity implements SearchView.OnQuery
                 giftsadapter=new GiftAdapter(GiftDetails.this, arraylist);
                 rv_list.setAdapter(giftsadapter);
 
-
-
-
                 MUtil.dismissProgressDialog();
             }
 

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -86,6 +87,7 @@ public class DownloadCoupon extends AppCompatActivity {
                   //  createFile();
                  //  Toast.makeText(DownloadCoupon.this,"",Toast.LENGTH_SHORT).show();
                 } else {
+                  //  Toast.makeText(DownloadCoupon.this,"alo",Toast.LENGTH_SHORT).show();
 
                     createFile();
                 }
@@ -199,6 +201,7 @@ public class DownloadCoupon extends AppCompatActivity {
                 .create()
                 .show();
     }
+
     private void createFile() {
         from = edtfrom.getText().toString();
         to = edtto.getText().toString();
@@ -246,7 +249,7 @@ public class DownloadCoupon extends AppCompatActivity {
                         cou.setIs_availed(is_availed);
                         cou.setPoints(points);
                         cou.setValid_til(valid_til);
-
+                      //  Toast.makeText(DownloadCoupon.this,"Download successful"+list.get(i).getCoupon(),Toast.LENGTH_SHORT).show();
                         day_sales.add(cou);
                     }
                     try {
@@ -268,11 +271,11 @@ public class DownloadCoupon extends AppCompatActivity {
     }
 
     private void createExcel(List<COUPON> day_sales) {
-      //  Toast.makeText(DownloadCoupon.this,"Download",Toast.LENGTH_SHORT).show();
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet("coupons");
 
         HSSFRow row = sheet.createRow((short) 0);
+
         row.createCell((short) 0).setCellValue("SNO");
         row.createCell((short) 1).setCellValue("COUPON");
         row.createCell((short) 2).setCellValue("IS_AVAILED");
@@ -285,7 +288,6 @@ public class DownloadCoupon extends AppCompatActivity {
         row.createCell((short) 8).setCellValue("Availed_by_email");
 
 
-
         int count = 1;
 
         int i = 0;
@@ -293,19 +295,19 @@ public class DownloadCoupon extends AppCompatActivity {
             if(i<0){
                 return;
             }
-
-            //  if(day_sales.get(i).getIs_availed() !=null && day_sales.get(i).getIs_availed().equalsIgnoreCase("YES")) {
             HSSFRow row1 = sheet.createRow(count);
+            //  if(day_sales.get(i).getIs_availed() !=null && day_sales.get(i).getIs_availed().equalsIgnoreCase("YES")) {
+
             row1.createCell((short) 0).setCellValue(coupon.getSno());
             row1.createCell((short) 1).setCellValue(coupon.getCoupon());
             row1.createCell((short) 2).setCellValue(coupon.getIs_availed());
             row1.createCell((short) 3).setCellValue(coupon.getValid_til());
             row1.createCell((short) 4).setCellValue(coupon.getPoints());
-
             row1.createCell((short) 5).setCellValue(coupon.getDate_availed());
             row1.createCell((short) 6).setCellValue(coupon.getAvailed_by_name());
             row1.createCell((short) 7).setCellValue(coupon.getAvailed_by_mobile());
             row1.createCell((short) 8).setCellValue(coupon.getAvailed_by_email());
+           // Toast.makeText(DownloadCoupon.this,"Download",Toast.LENGTH_SHORT).show();
 
             count++;
 
@@ -318,15 +320,21 @@ public class DownloadCoupon extends AppCompatActivity {
         File outputFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "coupon.xls");
 
         if (outputFile.exists()) {
+        //    Log.d("TAG","fileexist");
+
             try {
                 outputFile.delete();
             } catch (Exception e) {
+          //      Log.e("errordoesn'texist",e.toString());
             }
         }
         if (!outputFile.exists()) {
+
             try {
+              //  Log.d("TAG","filedoesnt exist");
                 outputFile.createNewFile();
             } catch (Exception e) {
+               // Log.e("errorexistt",e.toString());
             }
         }
         try {
@@ -340,8 +348,5 @@ public class DownloadCoupon extends AppCompatActivity {
             Toast.makeText(DownloadCoupon.this,"Download"+e,Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
     }
-
-
 }

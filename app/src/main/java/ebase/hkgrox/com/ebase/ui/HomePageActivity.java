@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,11 +38,9 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
 
     private TextView tv_forget;
     Config config;
-
     String login_url2 =config.ip_url;
-   // private String login_url2 = "http://192.168.0.101";
-
     List<USER> arraylist=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,8 +97,8 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 // Intent intent = new Intent(HomePageActivity.this,Coupon)
-                Intent intent = new Intent(HomePageActivity.this, CouponGifts.class);
-                // intent.putExtra(AppUtil.DATA,user);
+                Intent intent = new Intent(HomePageActivity.this, FirstPage.class);
+                intent.putExtra("DATA", "");
                 startActivity(intent);
 
             }
@@ -116,17 +116,17 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         if (v == btnLogin) {
             // Handle clicks for btnLogin
             if (isValid()) {
+
                 MUtil.showProgressDialog(HomePageActivity.this);
                 Retrofit retrofit=new Retrofit.Builder().baseUrl(login_url2).addConverterFactory(GsonConverterFactory.create()).build();
                 Loginservice loginservice=retrofit.create(Loginservice.class);
                 Call<List<USER>> call=loginservice.login(etMobileNo.getText().toString());
                 call.enqueue(new Callback<List<USER>>(){
-
                     @Override
                     public void onResponse(Call<List<USER>> call, Response<List<USER>> response) {
+                        List<USER> list=response.body();
+                    //    Toast.makeText(getApplicationContext(),""+list.get(0).getDEGINATION(),Toast.LENGTH_SHORT).show();
 
-                   //     Toast.makeText(getApplicationContext(),""+response,Toast.LENGTH_SHORT).show();
-                            List<USER> list=response.body();
                             USER user=null;
                             for(int i=0;i<list.size();i++) {
                                 user = new USER();
@@ -141,9 +141,10 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
                                 String enable = list.get(i).getENABLE();
                                 String point = list.get(i).getPOINTS();
                                 String pincode = list.get(i).getPINCODE();
+                                Log.d("TAG","USSERDATA"+list.get(i).getPOINTS());
                                 String password = list.get(i).getPASSWORD();
                                 String state = list.get(i).getSTATE();
-
+                                String upgrade = list.get(i).getUpgrade();
                                 String current_sstg = list.get(i).getCURRENT_SSTG();
                                 String date = list.get(i).getDATE();
                                 String monthaly_collection = list.get(i).getMONTHALY_COLLECTION();
@@ -152,10 +153,11 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
                                 String today_sstg = list.get(i).getTODAY_SSTG();
                                 String current_mct = list.get(i).getCURRENT_MCT();
 
+
                                 String current_mst = list.get(i).getCURRENT_MST();
                                 String today_mct = list.get(i).getTODAY_MCT();
                                 String today_mst = list.get(i).getTODAY_MST();
-
+                                user.setUpgrade(upgrade);
                                 user.setNAME(name);
                                 user.setDEGINATION(desgnation);
                                 user.setMOBILE(mobile);
@@ -204,9 +206,6 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
 
                                 }
                         MUtil.dismissProgressDialog();
-
-
-
                     }
 
                     @Override
@@ -265,7 +264,7 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
             intent.putExtra("Usertype","distributor");
 //            startActivity();
         }
-        if (user.getDEGINATION().equalsIgnoreCase("USER")) {
+        if (user.getDEGINATION().equalsIgnoreCase("USER")||user.getDEGINATION().equalsIgnoreCase("Retailer")) {
             intent = new Intent(this, UserHome.class);
             intent.putExtra("Usertype","user");
         }
@@ -282,6 +281,17 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
             intent = new Intent(this, AdminHome.class);
 
         }
+
+        if (user.getDEGINATION().contains("Premium Retailer")) {
+            intent = new Intent(this, UserHome.class);
+            intent.putExtra("Usertype","Premium Retailer");
+        }
+
+        if (user.getDEGINATION().contains("Workshop Owner")) {
+            intent = new Intent(this, UserHome.class);
+            intent.putExtra("Usertype","Workshop Owner");
+        }
+
         if (intent != null) {
             intent.putExtra("DATA", user);
             startActivity(intent);
@@ -296,6 +306,10 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(HomePageActivity.this,FirstPage.class));
+    }
 
     private void setNavigationDrawer() {
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -413,8 +427,8 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         couponGifts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePageActivity.this, CouponGifts.class);
-                // intent.putExtra(AppUtil.DATA,user);
+                Intent intent = new Intent(HomePageActivity.this, FirstPage.class);
+                intent.putExtra("DATA", "");
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
             }

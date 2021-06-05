@@ -7,8 +7,8 @@
     android:orientation="vertical"
     android:background="@android:color/white"
     android:layout_height="match_parent"
-
     tools:context="ebase.hkgrox.com.ebase.ui.AboutUs">
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -69,4 +69,5 @@
 
 
     </androidx.core.widget.NestedScrollView>
+
 </LinearLayout>

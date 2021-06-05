@@ -13,19 +13,44 @@
 <!--        android:layout_height="470dp">-->
 
 <!--    </WebView>-->
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="440dp"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_arrow"
+        android:gravity="center"
+        android:layout_below="@+id/view_pager"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:id="@+id/imageview1"
+            android:layout_marginRight="13dp"
+            android:src="@drawable/leftarrow"/>
+
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/forward"
+            android:id="@+id/imageview2"/>
+
+    </LinearLayout>
+
     <Button
         android:layout_width="wrap_content"
         android:text="Login"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/login"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/view_pager"
+        android:layout_below="@+id/layout_arrow"
         android:background="@color/colorPrimary"
         android:layout_gravity="center"
         android:layout_height="wrap_content" />

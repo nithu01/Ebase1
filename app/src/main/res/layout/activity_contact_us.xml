@@ -9,14 +9,14 @@
     android:layout_height="match_parent"
 
     tools:context="ebase.hkgrox.com.ebase.ui.AboutUs">
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="0dp"
         app:elevation="0dp">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -24,9 +24,9 @@
 
             >
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -82,7 +82,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:text="+91-98711 33515,+91-99100 33515"
+                android:text="+91-9871133515,+91-9910033515"
                 android:textSize="16sp"
                 android:lineSpacingExtra="4dp"
                 android:layout_height="match_parent" />

@@ -34,9 +34,7 @@ public class PointsDetails extends AppCompatActivity {
     private  AdapterExecutivesVenderEdit adapter1;
     private List<USER> userList;
     Config config;
-
     String login_url2 = config.ip_url;
-    //String login_url2 ="http://192.168.0.103";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +51,16 @@ public class PointsDetails extends AppCompatActivity {
             }
         });
 
-
         rv_list = (RecyclerView) findViewById(R.id.rv_list);
         rv_list.setLayoutManager(new LinearLayoutManager(this));
         sv_search = (SearchView) findViewById(R.id.sv_search);
+
         if (page.equalsIgnoreCase("staff_edit") || page.equalsIgnoreCase("vender")) {
             sv_search.setVisibility(View.VISIBLE);
         } else {
             sv_search.setVisibility(View.VISIBLE);
         }
+
         sv_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -83,7 +82,6 @@ public class PointsDetails extends AppCompatActivity {
                 return false;
             }
         });
-
 
         MUtil.showProgressDialog(this);
 
@@ -214,7 +212,6 @@ else {
                     }
                     */
                     if (page.equalsIgnoreCase("vender"))
-
                     {
                         userList = arraylist;
                        adapter1 = new AdapterExecutivesVenderEdit(PointsDetails.this, arraylist);

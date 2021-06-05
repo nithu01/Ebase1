@@ -16,7 +16,12 @@ public interface UserCouponApi {
     @GET("/ebase/usercoupon.php")
     Call<List<COUPON>> usercoupon(@Query("phn")String phn);
 
+    @GET("/ebase/newreport.php")
+    Call<List<COUPON>> newreport(@Query("phn")String phn);
 
-        @GET("/ebase/usergift.php")
-        Call<List<CouponRedeem>> usergift(@Query("phn")String phn);
+    @GET("/ebase/oldreport.php")
+    Call<List<COUPON>> oldreport(@Query("phn")String phn);
+
+    @GET("/ebase/usergift.php")
+    Call<List<CouponRedeem>> usergift(@Query("phn")String phn);
 }

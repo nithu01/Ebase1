@@ -1,14 +1,21 @@
 package ebase.hkgrox.com.ebase.ui;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +27,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import ebase.hkgrox.com.ebase.Config;
+import ebase.hkgrox.com.ebase.DownloadCoupon;
 import ebase.hkgrox.com.ebase.GiftpointApi;
 import ebase.hkgrox.com.ebase.R;
 import ebase.hkgrox.com.ebase.adapter.Recylerviewgiftadapter;
@@ -32,7 +40,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-    public class Giftstatus extends AppCompatActivity {
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+public class Giftstatus extends AppCompatActivity {
 
         String login = Config.ip_url;
         RecyclerView recyclerview;
@@ -41,6 +52,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
         Recylerviewgiftadapter adapters;
         Button button;
         List<GIFTS> list;
+        private static final int REQUEST_CODE_QR_SCAN = 101;
+        private static final int MY_CAMERA_REQUEST_CODE = 100;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -76,7 +90,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    createFilenewVendor();
+                    if (!checkPermission()) {
+                        requestPermission();
+                        //  createFile();
+                        //  Toast.makeText(DownloadCoupon.this,"",Toast.LENGTH_SHORT).show();
+                    } else {
+
+                        createFilenewVendor();
+                    }
+
                 }
             });
             recyclerview = (RecyclerView) findViewById(R.id.recyclerview);
@@ -133,9 +155,59 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
         }
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean cameraAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (locationAccepted && cameraAccepted) {
+                        createFilenewVendor();
+                    }
+                    else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
+                                showMessageOKCancel("You need to allow access to both the permissions",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE},
+                                                            1);
+                                                }
+                                            }
+                                        });
+                                return;
+                            }
+                        }
+
+                    }
+                }
 
 
-        public void onSearch(String query) {
+                break;
+        }
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(Giftstatus.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+    public void onSearch(String query) {
 
             ArrayList<GIFTS> contactsBeenLocal = new ArrayList<>();
 
@@ -179,7 +251,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
         }
-        public void createvender(ArrayList<GIFTS> filteredModelList) {
+    public void createvender(ArrayList<GIFTS> filteredModelList) {
 
 
           /*  Retrofit retrofit = new Retrofit.Builder().baseUrl(login).addConverterFactory(GsonConverterFactory.create()).build();
@@ -226,7 +298,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
             createExcelVendor(filteredModelList);
 
         }
-        private void createExcelVendor(List<GIFTS> day_sales) {
+    private void createExcelVendor(List<GIFTS> day_sales) {
 
             HSSFWorkbook wb = new HSSFWorkbook();
             HSSFSheet sheet = wb.createSheet("Gift status");
@@ -276,7 +348,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
                 wb.write(fileOut);
                 fileOut.close();
-
+                MUtil.dismissProgressDialog();
                 MUtil.showInfoAlertDialog(this, "Excel is downloaded in your phone internal memory as the name of Downloadgiftstatus.xls");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -294,9 +366,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
             return strings;
         }
 
-
         public void createFilenewVendor() {
-
+            MUtil.showProgressDialog(this);
             final List<Vender> arraylist = new ArrayList<>();
             Retrofit retrofit = new Retrofit.Builder().baseUrl(login).addConverterFactory(GsonConverterFactory.create()).build();
             GiftpointApi giftpointApi = retrofit.create(GiftpointApi.class);

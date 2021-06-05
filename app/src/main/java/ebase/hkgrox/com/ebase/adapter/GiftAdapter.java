@@ -5,6 +5,7 @@ import android.content.Context;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,11 +45,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class GiftAdapter extends RecyclerView.Adapter<GiftAdapter.ViewHolder> implements Filterable {
 
     private List<CouponRedeem> mValues;
-    private List<CouponRedeem> mValueslist;
+    private final List<CouponRedeem> mValueslist;
     private final Context context;
     private final String textInvited = "Invited";
     Config config;
-
     String login_url2 =config.ip_url;
     String srn;
 
@@ -93,7 +93,14 @@ public class GiftAdapter extends RecyclerView.Adapter<GiftAdapter.ViewHolder> im
         holder.btn_dispatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatch(holder.getAdapterPosition(), "no");
+                if (user.getAPPROVE().equalsIgnoreCase("yes")){
+                    dispatch(holder.getAdapterPosition(), "no");
+                    Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse("https://api.whatsapp.com/send?phone="+"91"+user.getMOBILE()+"&text="+"Hello,your gift has been dispatched"+""));
+                    context.startActivity(intent);
+                    holder.btn_dispatch.setVisibility(View.GONE);
+                }else{
+                    Toast.makeText(context,"Gift is not approved",Toast.LENGTH_SHORT).show();
+                }
 //                try {
 //                    String headerReceiver = "";// Replace with your message.
 //                    String bodyMessageFormal = "";// Replace with your message.
@@ -105,9 +112,7 @@ public class GiftAdapter extends RecyclerView.Adapter<GiftAdapter.ViewHolder> im
 //                } catch (Exception e) {
 //                    e.printStackTrace ();
 //                }
-                Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse("https://api.whatsapp.com/send?phone="+"91"+user.getMOBILE()+"&text="+"Hello,your gift has been dispatched"+""));
-                context.startActivity(intent);
-                holder.btn_dispatch.setVisibility(View.GONE);
+
             }
         });
         holder.month_collection.setText("Gift - " + user.getGIFT());
@@ -183,10 +188,12 @@ public class GiftAdapter extends RecyclerView.Adapter<GiftAdapter.ViewHolder> im
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (CouponRedeem item : mValueslist) {
+                    Log.d("TAG","filterdata"+item.getNAME().toLowerCase()+"\n"+filterPattern);
                     if (item.getMOBILE().toLowerCase().contains(filterPattern) || item.getNAME().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }
+
             }
             FilterResults results = new FilterResults();
             results.values = filteredList;
